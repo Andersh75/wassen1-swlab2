@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             
             
-            //REMOVE LAST DOC WITH hyreskostnad GÖR SOM MED SELECT OVAN!!!!
+            //REMOVE LAST DOC WITH hyreskostnad GÖR SOM MED SELECT OVAN!!!!!!!++
             buttonDiv = helper.dom.createElement("button");
             buttonDiv.addEventListener("click", function () {
                 helper.pouch.fetchAll(db)
