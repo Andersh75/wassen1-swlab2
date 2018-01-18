@@ -612,24 +612,26 @@ document.addEventListener('DOMContentLoaded', function () {
             let selectDiv = helper.dom.createElement("select");
             helper.dom.setAttribute('kind', 'rent', selectDiv);
             
-            selectDiv.addEventListener("change", async function(event){
-                let selectedValue = event.target.value;
-                selectedValue = helper.str.convertStrToNumber(selectedValue);
+            selectDiv.addEventListener("change", function(event){
+                let selectedValue;
+                let elementIdKind;
+                
+                selectedValue = helper.str.convertStrToNumber(event.target.value);
+                elementIdKind = event.target.attributes.kind.value;
 
-                let elementIdKind = event.target.attributes.kind.value;
-
-                let newElementIdNumber = await helper.pouch.getLastElementIdNumber(db, elementIdKind);
-                newElementIdNumber = helper.str.convertStrToNumber(newElementIdNumber);
-
-                let newElementIdNumbers = helper.arr.seqArrayFromTo(newElementIdNumber, (newElementIdNumber + selectedValue - 1));
-
-                createDocsAndPutInDb(newElementIdNumbers, elementIdKind)
+                helper.pouch.getLastElementIdNumber(db, elementIdKind)
+                .then((newElementIdNumber) => {
+                    let newElementIdNumbers = helper.arr.seqArrayFromTo(newElementIdNumber, (newElementIdNumber + selectedValue - 1));
+                    return newElementIdNumbers;
+                })
+                .then((newElementIdNumbers) => {
+                    return createDocs(newElementIdNumbers, elementIdKind);
+                })
                 .then((docs) => {
-                    console.log('docs!');
-                    console.log(docs);
-                    return db.bulkDocs(docs);
+                    return helper.pouch.postDocs(docs, db);
                 });
             });
+
 
             let optionDiv = helper.dom.createElement("option");
             helper.dom.setAttribute("value", 1, optionDiv);
@@ -649,97 +651,72 @@ document.addEventListener('DOMContentLoaded', function () {
             helper.dom.appendChildNodeIO(selectDiv, selectDivParent);
 
 
-//REMOVE ALL DOCS BUTTON
-            let buttonDiv = helper.dom.createElement("button");
-            helper.dom.setAttribute('kind', 'rent', buttonDiv);
 
-            buttonDiv.addEventListener("click", function(event) {
-                let elementIdKind = event.target.attributes.kind.value;
-                helper.pouch.deleteAllRowsWithFilter(db, elementIdKind);
+
+//REMOVE ALL DOCS BUTTON
+            let elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "button";
+
+            elementInfo.attribute.push({
+                key: "kind",
+                value: "rent"
             });
-            helper.dom.appendInnerHTMLIO("remove all!", buttonDiv);
-            helper.dom.appendChildNodeIO(buttonDiv, selectDivParent);
+
+            elementInfo.event.push({
+                key: "click",
+                value: helper.event.deleteAllDocsWithFilter
+            });
+
+            let buttonElement = helper.dom.elementBuilder(elementInfo, db);
+
+            helper.dom.appendInnerHTMLIO("remove all!", buttonElement);
+            helper.dom.appendChildNodeIO(buttonElement, selectDivParent);
 
             
             
 //REMOVE LAST DOC BUTTON
-            buttonDiv = helper.dom.createElement("button");
-            helper.dom.setAttribute('kind', 'rent', buttonDiv);
+            elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "button";
 
-            buttonDiv.addEventListener("click", function(event) {
-                let elementIdKind = event.target.attributes.kind.value;
-                helper.pouch.getAllRowsWithFilter(db, elementIdKind)
-                .then((filteredRows) => {
-                    let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
-
-                    if (!helper.boolean.isEmpty(sortedFilteredRows)) {
-                        let idOfDocToRemove = sortedFilteredRows[0].id;
-                        helper.pouch.deleteDoc(idOfDocToRemove, db);
-                    }   
-                })
-                .then(() => {
-                    return helper.pouch.fetchAll(db);     
-                })
-                .then((result) => {
-                    console.log(result.rows);
-                });
+            elementInfo.attribute.push({
+                key: "kind",
+                value: "rent"
             });
-            helper.dom.appendInnerHTMLIO("remove last rent!", buttonDiv);
-            helper.dom.appendChildNodeIO(buttonDiv, selectDivParent);
 
-
-
-            //ADD ONE DOC rent
-
-            buttonDiv = helper.dom.createElement("button");
-            buttonDiv.addEventListener("click", function() {
-
-
-                
-                helper.pouch.fetchAll(db)
-                    .then((result) => {
-                        console.log("resultUnsorted");
-                        console.log(result.rows);
-                        let newElementIdNumber;
-                        let elementIdKind = "rent";
-                        if (helper.boolean.isEmpty(result.rows)) {
-
-                            newElementIdNumber = 1;
-
-                        } else {
-
-                            let filteredSortedArray = helper.pouch.sortAndFilterDocs(result.rows, elementIdKind, "desc");
-
-                            let elementIdOfLastDoc = filteredSortedArray[0].doc.elementId;
-                            let zOfLastDoc = helper.str.getLastWordFromStringUsingSpliter(elementIdOfLastDoc, "-");
-                            console.log("zOfLastDoc");
-                            console.log(zOfLastDoc);
-                            newElementIdNumber = helper.str.convertStrToNumber(zOfLastDoc) + 1;
-                        }
-
-
-                        createDoc(db, newElementIdNumber, elementIdKind)
-                        .then((doc) => {
-                            //console.log(elementIdNumber);
-                            console.log(doc);
-                            return db.put(doc);
-                        });;
-
-
-                        helper.pouch.fetchAll(db)
-                            .then((result) => {
-                                console.log(result.rows);
-                            })
-                    })
+            elementInfo.event.push({
+                key: "click",
+                value: helper.event.deleteLastDocWithFilter
             });
-            helper.dom.appendInnerHTMLIO("Add one rent!", buttonDiv);
-            helper.dom.appendChildNodeIO(buttonDiv, selectDivParent);
+
+            buttonElement = helper.dom.elementBuilder(elementInfo, db);
+
+            helper.dom.appendInnerHTMLIO("remove last rent!", buttonElement);
+            helper.dom.appendChildNodeIO(buttonElement, selectDivParent);
+
+
+
+//ADD ONE DOC rent
+            elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "button";
+
+            elementInfo.attribute.push({
+                key: "kind",
+                value: "rent"
+            });
+
+            elementInfo.event.push({
+                key: "click",
+                value: helper.event.addOneDocLastWithFilter
+            });
+
+            buttonElement = helper.dom.elementBuilder(elementInfo, db);
+            helper.dom.appendInnerHTMLIO("Add one rent!", buttonElement);
+            helper.dom.appendChildNodeIO(buttonElement, selectDivParent);
             
 
 
 
             function buildRent(event) {
-
                 numberOfElements = event.target.value;
                 seqArray = helper.arr.seqArrayFromLength(numberOfElements);
                 console.log(event);
@@ -751,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
 
 
-            function createDocsAndPutInDb(arr, elementIdKind) {
+            function createDocs(arr, elementIdKind) {
                 return new Promise((resolve, reject) => {
                     let docs = [];
                     let index = 0;
@@ -781,7 +758,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            // createDocsAndPutInDb(seqArray, "rent")
+            // createDocs(seqArray, "rent")
             // .then((docs) => {
             //     db.bulkDocs(docs);
             //     console.log('after put');

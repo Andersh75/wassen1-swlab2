@@ -9,8 +9,8 @@ var views = {};
         form: my.curry(function(title, extraAttributes, extraEvents) {
             let element4 = title;
 
-            let info3 = new helper.dom.ElementInfoConstructor();
-            info3.element = "div";
+            let info3 = new helper.dom.kindInfoConstructor();
+            info3.kind = "div";
     
             info3.attribute.push({
                 key: "class",
@@ -26,7 +26,7 @@ var views = {};
     
     
             let info2 = new helper.dom.ElementInfoConstructor();
-            info2.element = "div";
+            info2.kind = "div";
     
             info2.attribute.push({
                 key: "class",
@@ -41,14 +41,14 @@ var views = {};
     
     
             let info1 = new helper.dom.ElementInfoConstructor();
-            info1.element = "div";
+            info1.kind = "div";
     
             info1.attribute.push({
                 key: "class",
                 value: "form-box"
             });
     
-            let element1 = helper.dom.elementBuilder(info1);
+            let element1 = helper.dom.kindBuilder(info1);
     
             helper.dom.appendChildNodeIO(element2, element1);
     
@@ -57,7 +57,7 @@ var views = {};
     
     
             let info4 = new helper.dom.ElementInfoConstructor();
-            info4.element = "input";
+            info4.kind = "input";
     
             info4.attribute.push({
                 key: "class",
@@ -84,7 +84,7 @@ var views = {};
     
     
             info3 = new helper.dom.ElementInfoConstructor();
-            info3.element = "form";
+            info3.kind = "form";
     
             info3.attribute.push({
                 key: "class",
@@ -99,7 +99,7 @@ var views = {};
     
     
             info2 = new helper.dom.ElementInfoConstructor();
-            info2.element = "form";
+            info2.kind = "form";
     
             info2.attribute.push({
                 key: "class",

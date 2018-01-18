@@ -443,17 +443,17 @@ var helper = {};
         /**
          * Creates a new element
          */
-        elementBuilder: my.curry(function (testingObject) {
+        elementBuilder: my.curry(function (testingObject, db) {
 
             //check if element exists
-            if (helper.boolean.isDefined(testingObject.element)) {
+            if (helper.boolean.isDefined(testingObject.kind)) {
                 
                  //create element
-                let element = helper.dom.createElement(testingObject.element);
+                let element = helper.dom.createElement(testingObject.kind);
 
                 //wraps div around element
-                let elementWrapper = helper.dom.createElement("div");
-                helper.dom.appendChildNodeIO(element, elementWrapper);
+                // let elementWrapper = helper.dom.createElement("div");
+                // helper.dom.appendChildNodeIO(element, elementWrapper);
                
                 //sets attributes
                 if (helper.boolean.isDefined(testingObject.attribute)) {
@@ -480,9 +480,11 @@ var helper = {};
                 //sets eventlistender
                 testingObject.event.forEach(function (item) {
                     element.addEventListener(item.key, function(event) {
-                       item.value(event);
-                    })
+                       item.value(event, db);
+                    });
                 });
+
+                console.log(element);
 
                 
                 // if(testingObject.element === "option") {
@@ -491,9 +493,9 @@ var helper = {};
                 //     elementWrapper = element;
                 // }
 
-                elementWrapper = element;
+                // elementWrapper = element;
                
-                return elementWrapper;
+                return element;
 
 
             }
@@ -504,7 +506,7 @@ var helper = {};
          * Constructs an empty element info object
          */
         ElementInfoConstructor: my.curry(function () {
-            this.element = "";
+            this.kind = "";
             this.attribute = [
 
             ];
@@ -530,7 +532,7 @@ var helper = {};
             let elementInfos = rows.map((item) => {
 
                 let elementInfo = new helper.dom.ElementInfoConstructor();
-                elementInfo.element = "input";
+                elementInfo.kind = "input";
                 elementInfo.attribute.push({
                     key: "dbName",
                     value: item.doc.dbName
@@ -579,6 +581,43 @@ var helper = {};
       
 
     
+    },
+
+    this.event = {
+        deleteLastDocWithFilter: my.curry(function (event, db) {
+            let elementIdKind = event.target.attributes.kind.value;
+
+            helper.pouch.deleteLastRowWithFilter(db, elementIdKind)
+            .then(() => {
+                return helper.pouch.fetchAll(db);     
+            })
+            .then((result) => {
+                console.log(result.rows);
+            });
+        }),
+
+        addOneDocLastWithFilter: my.curry(function (event, db) {
+            let elementIdKind = event.target.attributes.kind.value;
+
+            helper.pouch.getLastElementIdNumber(db, elementIdKind)
+            .then((newElementIdNumber) => {
+                return createDoc(db, newElementIdNumber, elementIdKind);
+            })
+            .then((doc) => {
+                return helper.pouch.postDoc(doc, db);
+            })
+            .then(() => {
+                return helper.pouch.fetchAll(db);
+            })
+            .then((result) => {
+                console.log(result.rows);
+            });   
+        }),
+
+        deleteAllDocsWithFilter: my.curry(function (event, db) {
+            let elementIdKind = event.target.attributes.kind.value;
+            helper.pouch.deleteAllRowsWithFilter(db, elementIdKind);  
+        })
     },
 
     //POUCH
@@ -639,6 +678,14 @@ var helper = {};
             });
         }),
 
+        postDoc: my.curry(function (doc, db) {
+            return db.put(doc);
+        }),
+
+        postDocs: my.curry(function (docs, db) {
+            return db.bulkDocs(docs);
+        }),
+
         fetchAll: my.curry(function(db) {
             return db.allDocs({
                 include_docs: true,
@@ -674,29 +721,42 @@ var helper = {};
             });
         }),
 
-        getLastElementIdNumber: my.curry(async function (db, elementIdKind) {
-            let answer = await helper.pouch.fetchAll(db)
-                .then((result) => {
-                    console.log("resultUnsorted");
-                    console.log(result.rows);
-                    let newElementIdNumber;
+        deleteLastRowWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRowsWithFilter(db, filter)
+            .then((filteredRows) => {
+                let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
 
-                    if (helper.boolean.isEmpty(result.rows)) {
-                        newElementIdNumber = 1;
-                    } else {
-                        let filteredSortedArray = helper.pouch.sortAndFilterDocs(result.rows, elementIdKind, "desc");
-                        let elementIdOfLastDoc = filteredSortedArray[0].doc.elementId;
-                        let zOfLastDoc = helper.str.getLastWordFromStringUsingSpliter(elementIdOfLastDoc, "-");
-                        console.log("zOfLastDoc");
-                        console.log(zOfLastDoc);
-                        newElementIdNumber = helper.str.convertStrToNumber(zOfLastDoc) + 1;
-                    }
+                if (!helper.boolean.isEmpty(sortedFilteredRows)) {
+                    let idOfDocToRemove = sortedFilteredRows[0].id;
+                    helper.pouch.deleteDoc(idOfDocToRemove, db);
+                }   
+            });
+        }),
 
-                    return newElementIdNumber;
 
-                    
-                });
-            return answer;
+
+
+        getLastElementIdNumber: my.curry(function (db, elementIdKind) {
+            return helper.pouch.getAllRowsWithFilter(db, elementIdKind)
+            .then((filteredRows) => {
+                let newElementIdNumber;
+                let sortedFilteredRows;
+                let elementIdOfLastDoc;
+                let elementIdNumberOfLastDoc;
+
+                if (!helper.boolean.isEmpty(filteredRows)) {
+                    sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
+                    elementIdOfLastDoc = sortedFilteredRows[0].doc.elementId;
+                    elementIdNumberOfLastDoc = helper.str.getLastWordFromStringUsingSpliter(elementIdOfLastDoc, "-");
+                    newElementIdNumber = helper.str.convertStrToNumber(elementIdNumberOfLastDoc) + 1;
+                } else {
+                    newElementIdNumber = 1;
+                }
+
+                console.log("newElementIdNumber", newElementIdNumber);
+
+                return newElementIdNumber;
+            });
         })
         
     }
