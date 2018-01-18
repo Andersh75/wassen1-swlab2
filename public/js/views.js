@@ -6,10 +6,10 @@ var views = {};
     this.parmaco = {
 
 
-        form: my.curry(function(title, extraAttributes, extraEvents) {
+        form: my.curry(function(title, db, filteredRow) {
             let element4 = title;
 
-            let info3 = new helper.dom.kindInfoConstructor();
+            let info3 = new helper.dom.ElementInfoConstructor();
             info3.kind = "div";
     
             info3.attribute.push({
@@ -17,7 +17,7 @@ var views = {};
                 value: "text-block"
             });
     
-            let element3 = helper.dom.elementBuilder(info3);
+            let element3 = helper.dom.elementBuilder(info3, db);
     
             helper.dom.appendInnerHTMLIO(element4, element3);
     
@@ -33,7 +33,13 @@ var views = {};
                 value: "text-box"
             });
     
-            let element2 = helper.dom.elementBuilder(info2);
+            let element2 = helper.dom.elementBuilder(info2, db);
+
+            console.log('element2');
+            console.log(element2);
+            console.log('element3');
+            console.log(element3);
+
     
             helper.dom.appendChildNodeIO(element3, element2);
     
@@ -48,7 +54,7 @@ var views = {};
                 value: "form-box"
             });
     
-            let element1 = helper.dom.kindBuilder(info1);
+            let element1 = helper.dom.elementBuilder(info1, db);
     
             helper.dom.appendChildNodeIO(element2, element1);
     
@@ -68,6 +74,52 @@ var views = {};
                 key: "type",
                 value: "text"
             });
+
+            let extraAttributes = [
+                {
+                    key: "kind-" + filteredRow.doc.kind,
+                    value: true
+                },
+                {
+                    key: "kind",
+                    value: filteredRow.doc.kind
+                },
+                {
+                    key: "placeholder",
+                    value: "Enter your name"
+                },
+                {
+                    key: "id",
+                    value: filteredRow.doc.elementId
+                },
+                {
+                    key: "dbid",
+                    value: filteredRow.doc._id
+                },
+                {
+                    key: "value",
+                    value: filteredRow.doc.elementValue
+                },
+                {
+                    key: "data-cell",
+                    value: filteredRow.doc.elementId
+                }
+            ];
+
+            let extraEvents = [
+                {
+                    key: "click",
+                    value: detectClickFunction
+                },
+                {
+                    key: "keypress",
+                    value: detectKeybordFunction
+                },
+                {
+                    key: "blur",
+                    value: detectBlurFunction
+                }
+            ];
             
             extraAttributes.forEach((item) => {
                 info4.attribute.push(item);
@@ -78,7 +130,7 @@ var views = {};
             });
 
     
-            element4 = helper.dom.elementBuilder(info4);
+            element4 = helper.dom.elementBuilder(info4, db);
     
             console.log(element4);
     
@@ -91,7 +143,7 @@ var views = {};
                 value: "input-form"
             });
     
-            element3 = helper.dom.elementBuilder(info3);
+            element3 = helper.dom.elementBuilder(info3, db);
     
             helper.dom.appendChildNodeIO(element4, element3);
     
@@ -106,7 +158,7 @@ var views = {};
                 value: "form-block w-form"
             });
     
-            element2 = helper.dom.elementBuilder(info2);
+            element2 = helper.dom.elementBuilder(info2, db);
     
             helper.dom.appendChildNodeIO(element3, element2);
     
@@ -227,6 +279,30 @@ var views = {};
 
             //helper.dom.appendInnerHTMLIO("remove all!", selectElement);
             helper.dom.appendChildNodeIO(selectElement, parentElement);
+        }),
+
+        createButtonsRowOfKind: my.curry(function (holderId, kind, db) {
+            let holderElement = helper.dom.getElement("id", holderId);
+
+            views.parmaco.createSelectAddSelectedNumberOfDocsOfKind(kind, db, holderElement);
+            views.parmaco.createButtonRemoveAllDocsOfKind(kind, db, holderElement);
+            views.parmaco.createButtonRemoveLastDocOfKind(kind, db, holderElement);
+            views.parmaco.createButtonAddOneDocOfKind(kind, db, holderElement);
+        }),
+
+        createAllElementsOfKind: my.curry(function (holderId, kind, db) {
+            let holderElement = helper.dom.getElement("id", holderId);
+
+            helper.pouch.getAllRowsWithFilter(db, kind)
+            .then((filteredRows) => {
+                let elements = filteredRows.map((filteredRow) => {
+                    return views.parmaco.form(kind, db, filteredRow);
+                });
+                elements.forEach((element) => {
+                    helper.dom.appendChildNodeIO(element, holderElement);
+                });
+            });
         })
     };
+
 }).apply(views);

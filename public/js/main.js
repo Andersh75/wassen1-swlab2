@@ -501,31 +501,21 @@ function updateDBWithElementValue(element, dataKind, serializedFunction, db) {
     })
 }
 
-function sendEvent(event, db) {
+//DOES MULTIPLE THINGS!!!
+function updateDbWithNewElementValue(event, db) {
 
-    let serializedNonsensFunction = helper.functions.serialize(nonsensFunction);
+    helper.dom.setAttribute('value', event.target.value, event.target);
+    let dbId = helper.dom.getAttribute("dbid", event.target);
 
-    helper.dom.setAttribute('value', event.target.value, event.target);//puts the value into html code
-    updateDBWithElementValue(event.target, event.target.kind, serializedNonsensFunction, db)
-        .then(() => {
-            let elementsOfKind = [].slice.call(document.querySelectorAll('[kind-rent]'));
-            elementsOfKind.forEach((element) => {
-                let dbId = helper.dom.getAttribute("db-id", element);
-
-                helper.pouch.getDoc(dbId, db)
-                    .then((doc) => {
-                        //updates document value on database
-                        element.value = doc.elementValue;
-                        console.log("elemVal: ", element.value);
-
-
-                        return doc;
-                    })
-                    .then((doc) => {
-                        console.log(doc);
-                    });
-            })
-        });
+    console.log(dbId);
+    helper.pouch.getDoc(dbId, db)
+    .then((doc) => {
+        doc.elementValue = event.target.value;
+        return doc;
+    })
+    .then((doc) => {
+        helper.pouch.putDoc(doc, db);
+    });
 }
 
 
@@ -544,7 +534,7 @@ function createDoc(db, elementIdNumber, elementIdKind) {
              elementValue: "",
              elementFunction: serializedNonsensFunction,
              written: new Date().toISOString(),
-             kind: "rent"
+             kind: "rent",
          };
 
          console.log(doc);
@@ -575,6 +565,24 @@ function createDoc(db, elementIdNumber, elementIdKind) {
     })
 }
 
+function detectClickFunction(event, db) {
+    console.log(event);
+};
+
+function detectKeybordFunction(event, db) {
+    let keyPressed = event.whitch || event.keyCode || event.charCode;
+    if (keyPressed === 13) {
+        event.preventDefault();
+        updateDbWithNewElementValue(event, db);
+        event.target.blur();
+    }
+};
+
+function detectBlurFunction(event, db) {
+    event.preventDefault();
+    updateDbWithNewElementValue(event, db);
+}
+
 
 //test function
 function nonsensFunction(x, y) {
@@ -600,177 +608,9 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (db) {
 
-            // var numberOfElements;
-            // var seqArray = [];
 
-            // numberOfElements = 0;
-            // seqArray = helper.arr.seqArrayFromLength(numberOfElements);
-
-            
-            // function buildRent(event) {
-            //     numberOfElements = event.target.value;
-            //     seqArray = helper.arr.seqArrayFromLength(numberOfElements);
-            //     console.log(event);
-            // } 
-
-
-            function detectClickFunction(event) {
-                console.log(event);
-            };
-
-            function detectKeybordFunction(event) {
-
-                let keyPressed = event.whitch || event.keyCode || event.charCode;
-                if (keyPressed === 13) {
-                    event.preventDefault();
-                    sendEvent(event, db);
-                    event.target.blur();
-                }
-            };
-
-            function detectBlurFunction(event) {
-                event.preventDefault();
-                sendEvent(event, db);
-            }
-
-
-            let holderElement = helper.dom.getElement("id", "forms-chart-id");
-
-            views.parmaco.createSelectAddSelectedNumberOfDocsOfKind('rent', db, holderElement);
-
-//REMOVE ALL DOCS BUTTON
-
-            views.parmaco.createButtonRemoveAllDocsOfKind('rent', db, holderElement);
-            
-//REMOVE LAST DOC BUTTON
-            views.parmaco.createButtonRemoveLastDocOfKind('rent', db, holderElement);
-
-//ADD ONE DOC rent
-            views.parmaco.createButtonAddOneDocOfKind('rent', db, holderElement);
-            
-
-
-
-
-
-            
-
-            
-
-
-            
-
-
-
-
-
-
-
-
-
-            // createDocs(seqArray, "rent")
-            // .then((docs) => {
-            //     db.bulkDocs(docs);
-            //     console.log('after put');
-            //     let divFirstFormsBox = helper.dom.getElement("id", "first-forms-box");
-
-            //     helper.pouch.getAllRowsWithFilter(db, "rent")
-            //         .then((filteredRows) => {
-            //             console.log("filteredRows");
-            //             console.log(filteredRows);
-            //             let numberOfElements = filteredRows.length;
-            //             console.log("numOfElements");
-            //             console.log(numberOfElements);
-            //             return numberOfElements;
-            //         })
-            //         .then((numberOfElements) => {
-            //             for (let z = 1; z <= numberOfElements; z++) {
-            //                 //let letter = String.fromCharCode("A".charCodeAt(0) + z);
-            //                 let letter = z;
-
-            //                 let extraAttributes = [
-            //                     {
-            //                         key: "kind-rent",
-            //                         value: true
-            //                     },
-            //                     {
-            //                         key: "kind",
-            //                         value: "rent"
-            //                     },
-            //                     {
-            //                         key: "placeholder",
-            //                         value: "Enter your name"
-            //                     },
-            //                     {
-            //                         key: "id",
-            //                         value: "rent-" + letter
-            //                     },
-            //                     {
-            //                         key: "data-cell",
-            //                         value: "rent-" + letter
-            //                     }
-            //                 ];
-
-            //                 let extraEvents = [
-            //                     {
-            //                         key: "click",
-            //                         value: detectClickFunction
-            //                     },
-            //                     {
-            //                         key: "keypress",
-            //                         value: detectKeybordFunction
-            //                     },
-            //                     {
-            //                         key: "blur",
-            //                         value: detectBlurFunction
-            //                     }
-            //                 ];
-
-            //                 db.allDocs({ include_docs: true })
-            //                     .then((docs) => {
-            //                         let filteredRows = docs.rows.filter((doc) => {
-            //                             return doc.doc.elementId === "rent-" + letter;
-            //                         });
-
-            //                         return filteredRows;
-            //                     })
-            //                     .then((filteredRows) => {
-            //                         if (filteredRows.length > 0) {
-
-            //                             let valueAttribute = {
-            //                                 key: "value",
-            //                                 value: filteredRows[0].doc.elementValue
-            //                             };
-
-            //                             extraAttributes.push(valueAttribute);
-
-            //                             let docIdAttribute = {
-            //                                 key: "db-id",
-            //                                 value: filteredRows[0].doc._id
-            //                             }
-
-            //                             extraAttributes.push(docIdAttribute);
-
-            //                             let divFirstForms1 = views.parmaco.form('rent', extraAttributes, extraEvents);
-            //                             helper.dom.appendChildNodeIO(divFirstForms1, divFirstFormsBox);
-
-            //                         }
-            //                     });
-            //             }
-            //         });
-            // })
-
-            
-
-
-
-
-
-
-
-
-
-
+            views.parmaco.createButtonsRowOfKind('forms-chart-id', 'rent', db);
+            views.parmaco.createAllElementsOfKind('first-forms-box', 'rent', db);
 
 
 

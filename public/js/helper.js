@@ -702,6 +702,10 @@ var helper = {};
             return db.put(doc);
         }),
 
+        putDoc: my.curry(function (doc, db) {
+            return db.put(doc);
+        }),
+
         postDocs: my.curry(function (docs, db) {
             return db.bulkDocs(docs);
         }),
