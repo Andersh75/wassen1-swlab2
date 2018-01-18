@@ -565,24 +565,6 @@ function createDoc(db, elementIdNumber, elementIdKind) {
     })
 }
 
-function detectClickFunction(event, db) {
-    console.log(event);
-};
-
-function detectKeybordFunction(event, db) {
-    let keyPressed = event.whitch || event.keyCode || event.charCode;
-    if (keyPressed === 13) {
-        event.preventDefault();
-        updateDbWithNewElementValue(event, db);
-        event.target.blur();
-    }
-};
-
-function detectBlurFunction(event, db) {
-    event.preventDefault();
-    updateDbWithNewElementValue(event, db);
-}
-
 
 //test function
 function nonsensFunction(x, y) {
@@ -609,19 +591,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function (db) {
 
             views.parmaco.createSection('rent', db);
-            
-
-
-            views.parmaco.createBoxForSection('main', 'hej', db);
-            views.parmaco.createBoxForHeadline('hej-box', 'hej', db);
-            views.parmaco.createHeadlineOfKind('hej-heading-box', 'hej', db);
-
-            views.parmaco.createBoxForButtonsRow('hej-box', 'hej', db);
-            views.parmaco.createButtonsRowOfKind('hej-buttonsrow-box', 'hej', db);
-
-            views.parmaco.createBoxForAllElementsOfKind('hej-box', 'hej', db);
-            views.parmaco.createAllElementsOfKind('hej-allelementsofkind-box', 'hej', db);
-
+            views.parmaco.createSection('interest', db);
+            views.parmaco.createSection('heating', db);
+            views.parmaco.createSection('maintenance', db);
 
 
             db.sync(remoteCouch, { live: true, retry: true, conflicts: true, include_docs: true })

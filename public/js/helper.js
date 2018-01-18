@@ -637,6 +637,24 @@ var helper = {};
             .then((docs) => {
                 return helper.pouch.postDocs(docs, db);
             }); 
+        }),
+
+        detectClickFunction: my.curry(function (event, db) {
+            console.log(event);
+        }),
+
+        detectKeybordFunction: my.curry(function (event, db) {
+            let keyPressed = event.whitch || event.keyCode || event.charCode;
+            if (keyPressed === 13) {
+                event.preventDefault();
+                updateDbWithNewElementValue(event, db);
+                event.target.blur();
+            }
+        }),
+
+        detectBlurFunction: my.curry(function (event, db) {
+            event.preventDefault();
+            updateDbWithNewElementValue(event, db);
         })
     },
 

@@ -109,15 +109,15 @@ var views = {};
             let extraEvents = [
                 {
                     key: "click",
-                    value: detectClickFunction
+                    value: helper.event.detectClickFunction
                 },
                 {
                     key: "keypress",
-                    value: detectKeybordFunction
+                    value: helper.event.detectKeybordFunction
                 },
                 {
                     key: "blur",
-                    value: detectBlurFunction
+                    value: helper.event.detectBlurFunction
                 }
             ];
             
