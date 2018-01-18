@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let selectDivParent = helper.dom.getElement("id", "forms-chart-id");
             let selectDiv = helper.dom.createElement("select");
-            helper.dom.setAttribute('kind', 'hyreskostnad', selectDiv);
+            helper.dom.setAttribute('kind', 'rent', selectDiv);
             
             selectDiv.addEventListener("change", async function(event){
                 let selectedValue = event.target.value;
@@ -649,50 +649,47 @@ document.addEventListener('DOMContentLoaded', function () {
             helper.dom.appendChildNodeIO(selectDiv, selectDivParent);
 
 
-//REMOVE ALL DOCS
+//REMOVE ALL DOCS BUTTON
             let buttonDiv = helper.dom.createElement("button");
-            buttonDiv.addEventListener("click", function() {
-                helper.pouch.fetchAll(db)
-                .then((result) => {
-                    result.rows.forEach((row) => {
-                        helper.pouch.removeDoc(row.doc, db);
-                       
-                    });
-                })
+            helper.dom.setAttribute('kind', 'rent', buttonDiv);
+
+            buttonDiv.addEventListener("click", function(event) {
+                let elementIdKind = event.target.attributes.kind.value;
+                helper.pouch.deleteAllRowsWithFilter(db, elementIdKind);
             });
             helper.dom.appendInnerHTMLIO("remove all!", buttonDiv);
             helper.dom.appendChildNodeIO(buttonDiv, selectDivParent);
 
             
             
-            //REMOVE LAST DOC WITH hyreskostnad GÖR SOM MED SELECT OVAN!!!!!!!++
+//REMOVE LAST DOC BUTTON
             buttonDiv = helper.dom.createElement("button");
-            buttonDiv.addEventListener("click", function () {
-                helper.pouch.fetchAll(db)
-                    .then((result) => {
-                        console.log("resultUnsorted");
-                        console.log(result.rows);
-                        let elementIdKind = "hyreskostnad";
-                        let filteredSortedArray = helper.pouch.sortAndFilterDocs(result.rows, elementIdKind, "desc");
-                        console.log("filteredSortedArray");
-                        console.log(filteredSortedArray);
-                        if (!helper.boolean.isEmpty(filteredSortedArray)) {
-                            let idOfDocToRemove = filteredSortedArray[0].id;
-                            helper.pouch.deleteDoc(idOfDocToRemove, db);
-                        }
+            helper.dom.setAttribute('kind', 'rent', buttonDiv);
 
-                        helper.pouch.fetchAll(db)
-                            .then((result) => {
-                                console.log(result.rows);
-                            })
-                    })
+            buttonDiv.addEventListener("click", function(event) {
+                let elementIdKind = event.target.attributes.kind.value;
+                helper.pouch.getAllRowsWithFilter(db, elementIdKind)
+                .then((filteredRows) => {
+                    let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
+
+                    if (!helper.boolean.isEmpty(sortedFilteredRows)) {
+                        let idOfDocToRemove = sortedFilteredRows[0].id;
+                        helper.pouch.deleteDoc(idOfDocToRemove, db);
+                    }   
+                })
+                .then(() => {
+                    return helper.pouch.fetchAll(db);     
+                })
+                .then((result) => {
+                    console.log(result.rows);
+                });
             });
-            helper.dom.appendInnerHTMLIO("remove last hyreskostnad!", buttonDiv);
+            helper.dom.appendInnerHTMLIO("remove last rent!", buttonDiv);
             helper.dom.appendChildNodeIO(buttonDiv, selectDivParent);
 
 
 
-            //ADD ONE DOC hyreskostnad
+            //ADD ONE DOC rent
 
             buttonDiv = helper.dom.createElement("button");
             buttonDiv.addEventListener("click", function() {
@@ -704,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         console.log("resultUnsorted");
                         console.log(result.rows);
                         let newElementIdNumber;
-                        let elementIdKind = "hyreskostnad";
+                        let elementIdKind = "rent";
                         if (helper.boolean.isEmpty(result.rows)) {
 
                             newElementIdNumber = 1;
@@ -735,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             })
                     })
             });
-            helper.dom.appendInnerHTMLIO("Add one hyreskostnad!", buttonDiv);
+            helper.dom.appendInnerHTMLIO("Add one rent!", buttonDiv);
             helper.dom.appendChildNodeIO(buttonDiv, selectDivParent);
             
 
@@ -784,13 +781,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-            // createDocsAndPutInDb(seqArray, "hyreskostnad")
+            // createDocsAndPutInDb(seqArray, "rent")
             // .then((docs) => {
             //     db.bulkDocs(docs);
             //     console.log('after put');
             //     let divFirstFormsBox = helper.dom.getElement("id", "first-forms-box");
 
-            //     helper.pouch.getAllDocsWithFilter(db, "rent")
+            //     helper.pouch.getAllRowsWithFilter(db, "rent")
             //         .then((filteredRows) => {
             //             console.log("filteredRows");
             //             console.log(filteredRows);
@@ -819,11 +816,11 @@ document.addEventListener('DOMContentLoaded', function () {
             //                     },
             //                     {
             //                         key: "id",
-            //                         value: "hyreskostnad-" + letter
+            //                         value: "rent-" + letter
             //                     },
             //                     {
             //                         key: "data-cell",
-            //                         value: "hyreskostnad-" + letter
+            //                         value: "rent-" + letter
             //                     }
             //                 ];
 
@@ -845,7 +842,7 @@ document.addEventListener('DOMContentLoaded', function () {
             //                 db.allDocs({ include_docs: true })
             //                     .then((docs) => {
             //                         let filteredRows = docs.rows.filter((doc) => {
-            //                             return doc.doc.elementId === "hyreskostnad-" + letter;
+            //                             return doc.doc.elementId === "rent-" + letter;
             //                         });
 
             //                         return filteredRows;
@@ -867,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             //                             extraAttributes.push(docIdAttribute);
 
-            //                             let divFirstForms1 = views.parmaco.form('Hyreskostnad', extraAttributes, extraEvents);
+            //                             let divFirstForms1 = views.parmaco.form('rent', extraAttributes, extraEvents);
             //                             helper.dom.appendChildNodeIO(divFirstForms1, divFirstFormsBox);
 
             //                         }

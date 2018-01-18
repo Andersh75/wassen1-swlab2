@@ -585,13 +585,9 @@ var helper = {};
     this.pouch = {
 
 
-        sortAndFilterDocs: my.curry(function (arrayToSort, filterParameter, direction) {
-            let sortedArray = helper.arr.sortArray(arrayToSort, "id", direction);
-            let filteredSortedArray = sortedArray.filter((row) => {
-                console.log(helper.str.getFirstWordFromStringUsingSpliter(row.doc.elementId, "-"));
-                return filterParameter === helper.str.getFirstWordFromStringUsingSpliter(row.doc.elementId, "-");
-            });
-            return filteredSortedArray;
+        sortRows: my.curry(function (rows, sortParameter, direction) {
+            let sortedRows = helper.arr.sortArray(rows, sortParameter, direction);
+            return sortedRows;
         }),
 
         getConflictRows: my.curry(function (docs) {
@@ -622,6 +618,12 @@ var helper = {};
                 .then((doc) => helper.pouch.removeDoc(doc, db));
         }),
 
+        deleteRows: my.curry(function (rows, db) {
+            return rows.forEach((row) => {
+                helper.pouch.removeDoc(row.doc, db);    
+            });
+        }),
+
         removeDoc: my.curry(function (doc, db) {
             return new Promise(function (resolve, reject) {
                 doc._deleted = true;
@@ -644,13 +646,17 @@ var helper = {};
             });
         }),
 
-        getAllDocsWithFilter: my.curry(function (db, filter) {
+        getAllRows: my.curry(function (db) {
             return helper.pouch.fetchAll(db)
                 .then((docs) => {
                     console.log("docs")
                     console.log(docs);
                     return docs.rows;
-                })
+                });
+        }),
+
+        getAllRowsWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRows(db)
                 .then((rows) => {
                     let filteredRows = rows.filter((row) => {
                         return row.doc.kind === filter;
@@ -659,6 +665,13 @@ var helper = {};
                     console.log(filteredRows);
                     return filteredRows;
                 });
+        }),
+
+        deleteAllRowsWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRowsWithFilter(db, filter)
+            .then((filteredRows) => {
+                helper.pouch.deleteRows(filteredRows, db);
+            });
         }),
 
         getLastElementIdNumber: my.curry(async function (db, elementIdKind) {
