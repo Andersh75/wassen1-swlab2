@@ -166,11 +166,24 @@ var views = {};
     
     
             helper.dom.appendChildNodeIO(element2, element1);
-    
-    
-            console.log(element1);
 
-            return element1;
+
+            let info0 = new helper.dom.ElementInfoConstructor();
+            info0.kind = "div";
+    
+            info0.attribute.push({
+                key: "class",
+                value: "forms-box"
+            });
+    
+            element0 = helper.dom.elementBuilder(info0, db);
+    
+            helper.dom.appendChildNodeIO(element1, element0);
+    
+    
+            console.log(element0);
+
+            return element0;
         }),
 
         createButtonAddOneDocOfKind: my.curry(function (kind, db, parentElement) {
@@ -191,7 +204,7 @@ var views = {};
             });
 
             buttonElement = helper.dom.elementBuilder(elementInfo, db);
-            helper.dom.appendInnerHTMLIO("Add one rent!", buttonElement);
+            helper.dom.appendInnerHTMLIO("Add one " + kind, buttonElement);
             helper.dom.appendChildNodeIO(buttonElement, parentElement);
         }),
 
@@ -213,7 +226,7 @@ var views = {};
             });
 
             buttonElement = helper.dom.elementBuilder(elementInfo, db);
-            helper.dom.appendInnerHTMLIO("remove last rent!", buttonElement);
+            helper.dom.appendInnerHTMLIO("remove last " + kind, buttonElement);
             helper.dom.appendChildNodeIO(buttonElement, parentElement);
         }),
 
@@ -235,7 +248,7 @@ var views = {};
             });
 
             buttonElement = helper.dom.elementBuilder(elementInfo, db);
-            helper.dom.appendInnerHTMLIO("remove all!", buttonElement);
+            helper.dom.appendInnerHTMLIO("remove all " + kind, buttonElement);
             helper.dom.appendChildNodeIO(buttonElement, parentElement);
         }),
 
@@ -302,6 +315,126 @@ var views = {};
                     helper.dom.appendChildNodeIO(element, holderElement);
                 });
             });
+        }),
+
+        createHeadlineOfKind: my.curry(function (holderId, kind, db) {
+            let elementInfo = new helper.dom.ElementInfoConstructor();
+
+            elementInfo.kind = 'h1';
+            elementInfo.attribute.push({
+                key: "class",
+                value: "main-heading"
+            });
+
+            elementInfo.textNode.push(kind);
+
+            let elementH1 = helper.dom.elementBuilder(elementInfo, db);
+
+            let holderElement = helper.dom.getElement('id', holderId);
+            helper.dom.appendChildNodeIO(elementH1, holderElement);
+        }),
+
+        createBoxForAllElementsOfKind: my.curry(function (holderId, kind, db) {
+            let elementInfo = new helper.dom.ElementInfoConstructor();
+
+            elementInfo.kind = 'div';
+            elementInfo.attribute.push({
+                key: "class",
+                value: "forms-and-chart-box"
+            });
+            elementInfo.attribute.push({
+                key: "id",
+                value: kind + "-allelementsofkind-box"
+            });
+
+            let elementDiv = helper.dom.elementBuilder(elementInfo, db);
+
+
+            elementInfo = new helper.dom.ElementInfoConstructor();
+
+            elementInfo.kind = 'div';
+            elementInfo.attribute.push({
+                key: "class",
+                value: "forms-box"
+            });
+            elementInfo.attribute.push({
+                key: "id",
+                value: kind + "-forms-box"
+            });
+
+            let elementDivChild = helper.dom.elementBuilder(elementInfo, db);
+
+            helper.dom.appendChildNodeIO(elementDivChild, elementDiv);
+
+            let holderElement = helper.dom.getElement('id', holderId);
+            helper.dom.appendChildNodeIO(elementDiv, holderElement);
+        }),
+
+        createBoxForSection: my.curry(function (holderId, kind, db) {
+            let elementInfo = new helper.dom.ElementInfoConstructor();
+
+            elementInfo.kind = 'div';
+            elementInfo.attribute.push({
+                key: "id",
+                value: kind + "-box"
+            });
+
+            let elementDiv = helper.dom.elementBuilder(elementInfo, db);
+
+            let holderElement = helper.dom.getElement('id', 'main');
+            helper.dom.appendChildNodeIO(elementDiv, holderElement);
+        }),
+
+        createBoxForHeadline: my.curry(function (holderId, kind, db) {
+            elementInfo = new helper.dom.ElementInfoConstructor();
+
+            elementInfo.kind = 'div';
+            elementInfo.attribute.push({
+                key: "class",
+                value: "heading-box"
+            });
+
+            elementInfo.attribute.push({
+                key: "id",
+                value: kind + "-heading-box"
+            });
+
+            let elementDiv = helper.dom.elementBuilder(elementInfo, db);
+
+            let holderElement = helper.dom.getElement('id', holderId);
+            helper.dom.appendChildNodeIO(elementDiv, holderElement);
+        }),
+
+        createBoxForButtonsRow: my.curry(function (holderId, kind, db) {
+            elementInfo = new helper.dom.ElementInfoConstructor();
+
+            elementInfo.kind = 'div';
+            elementInfo.attribute.push({
+                key: "class",
+                value: "heading-box"
+            });
+
+            elementInfo.attribute.push({
+                key: "id",
+                value: kind + "-buttonsrow-box"
+            });
+
+            let elementDiv = helper.dom.elementBuilder(elementInfo, db);
+
+            let holderElement = helper.dom.getElement('id', holderId);
+            helper.dom.appendChildNodeIO(elementDiv, holderElement);
+        }),
+
+        createSection: my.curry(function (kind, db) {
+            views.parmaco.createBoxForSection('main', kind, db);
+            views.parmaco.createBoxForHeadline(kind + '-box', kind, db);
+            views.parmaco.createHeadlineOfKind(kind + '-heading-box', kind, db);
+
+            views.parmaco.createBoxForButtonsRow(kind + '-box', kind, db);
+            views.parmaco.createButtonsRowOfKind(kind + '-buttonsrow-box', kind, db);
+
+            views.parmaco.createBoxForAllElementsOfKind(kind + '-box', kind, db);
+            views.parmaco.createAllElementsOfKind(kind + '-allelementsofkind-box', kind, db);
         })
     };
 

@@ -472,7 +472,7 @@ var helper = {};
                 //sets textNode
                 if (helper.boolean.isDefined(testingObject.textNode)) {
                     testingObject.textNode.forEach(function (item) {
-                        let tempTextNode = document.createTextNode(item.value);
+                        let tempTextNode = document.createTextNode(item);
                         helper.dom.appendChildNodeIO(tempTextNode, element);
                     });
                 }

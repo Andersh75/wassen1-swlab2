@@ -534,7 +534,7 @@ function createDoc(db, elementIdNumber, elementIdKind) {
              elementValue: "",
              elementFunction: serializedNonsensFunction,
              written: new Date().toISOString(),
-             kind: "rent",
+             kind: elementIdKind,
          };
 
          console.log(doc);
@@ -608,9 +608,19 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (db) {
 
+            views.parmaco.createSection('rent', db);
+            
 
-            views.parmaco.createButtonsRowOfKind('forms-chart-id', 'rent', db);
-            views.parmaco.createAllElementsOfKind('first-forms-box', 'rent', db);
+
+            views.parmaco.createBoxForSection('main', 'hej', db);
+            views.parmaco.createBoxForHeadline('hej-box', 'hej', db);
+            views.parmaco.createHeadlineOfKind('hej-heading-box', 'hej', db);
+
+            views.parmaco.createBoxForButtonsRow('hej-box', 'hej', db);
+            views.parmaco.createButtonsRowOfKind('hej-buttonsrow-box', 'hej', db);
+
+            views.parmaco.createBoxForAllElementsOfKind('hej-box', 'hej', db);
+            views.parmaco.createAllElementsOfKind('hej-allelementsofkind-box', 'hej', db);
 
 
 
