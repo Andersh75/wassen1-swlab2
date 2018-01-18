@@ -553,6 +553,28 @@ function createDoc(db, elementIdNumber, elementIdKind) {
      });
  }
 
+ function createDocs(db, arr, elementIdKind) {
+    return new Promise((resolve, reject) => {
+        let docs = [];
+        let index = 0;
+        let timer = setInterval(function() {
+            if (index < arr.length) {
+                createDoc(db, arr[index++], elementIdKind)
+                .then((doc) => {
+                    docs.push(doc);
+                })
+                .catch(() => {
+                    clearInterval(timer);
+                    reject();                        
+                });
+            } else {
+                clearInterval(timer);
+                resolve(docs);
+            }
+        }, 100);
+    })
+}
+
 
 //test function
 function nonsensFunction(x, y) {
@@ -578,6 +600,20 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (db) {
 
+            // var numberOfElements;
+            // var seqArray = [];
+
+            // numberOfElements = 0;
+            // seqArray = helper.arr.seqArrayFromLength(numberOfElements);
+
+            
+            // function buildRent(event) {
+            //     numberOfElements = event.target.value;
+            //     seqArray = helper.arr.seqArrayFromLength(numberOfElements);
+            //     console.log(event);
+            // } 
+
+
             function detectClickFunction(event) {
                 console.log(event);
             };
@@ -597,158 +633,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 sendEvent(event, db);
             }
 
-            
 
+            let holderElement = helper.dom.getElement("id", "forms-chart-id");
 
-
-
-
-
-
-            var numberOfElements;
-            var seqArray = [];
-
-            let selectDivParent = helper.dom.getElement("id", "forms-chart-id");
-            let selectDiv = helper.dom.createElement("select");
-            helper.dom.setAttribute('kind', 'rent', selectDiv);
-            
-            selectDiv.addEventListener("change", function(event){
-                let selectedValue;
-                let elementIdKind;
-                
-                selectedValue = helper.str.convertStrToNumber(event.target.value);
-                elementIdKind = event.target.attributes.kind.value;
-
-                helper.pouch.getLastElementIdNumber(db, elementIdKind)
-                .then((newElementIdNumber) => {
-                    let newElementIdNumbers = helper.arr.seqArrayFromTo(newElementIdNumber, (newElementIdNumber + selectedValue - 1));
-                    return newElementIdNumbers;
-                })
-                .then((newElementIdNumbers) => {
-                    return createDocs(newElementIdNumbers, elementIdKind);
-                })
-                .then((docs) => {
-                    return helper.pouch.postDocs(docs, db);
-                });
-            });
-
-
-            let optionDiv = helper.dom.createElement("option");
-            helper.dom.setAttribute("value", 1, optionDiv);
-            helper.dom.appendInnerHTMLIO(1, optionDiv);
-            helper.dom.appendChildNodeIO(optionDiv, selectDiv);
-
-            optionDiv = helper.dom.createElement("option");
-            helper.dom.setAttribute("value", 2, optionDiv);
-            helper.dom.appendInnerHTMLIO(2, optionDiv);
-            helper.dom.appendChildNodeIO(optionDiv, selectDiv);
-
-            optionDiv = helper.dom.createElement("option");
-            helper.dom.setAttribute("value", 3, optionDiv);
-            helper.dom.appendInnerHTMLIO(3, optionDiv);
-            helper.dom.appendChildNodeIO(optionDiv, selectDiv);
-
-            helper.dom.appendChildNodeIO(selectDiv, selectDivParent);
-
-
-
+            views.parmaco.createSelectAddSelectedNumberOfDocsOfKind('rent', db, holderElement);
 
 //REMOVE ALL DOCS BUTTON
-            let elementInfo = new helper.dom.ElementInfoConstructor();
-            elementInfo.kind = "button";
 
-            elementInfo.attribute.push({
-                key: "kind",
-                value: "rent"
-            });
-
-            elementInfo.event.push({
-                key: "click",
-                value: helper.event.deleteAllDocsWithFilter
-            });
-
-            let buttonElement = helper.dom.elementBuilder(elementInfo, db);
-
-            helper.dom.appendInnerHTMLIO("remove all!", buttonElement);
-            helper.dom.appendChildNodeIO(buttonElement, selectDivParent);
-
-            
+            views.parmaco.createButtonRemoveAllDocsOfKind('rent', db, holderElement);
             
 //REMOVE LAST DOC BUTTON
-            elementInfo = new helper.dom.ElementInfoConstructor();
-            elementInfo.kind = "button";
-
-            elementInfo.attribute.push({
-                key: "kind",
-                value: "rent"
-            });
-
-            elementInfo.event.push({
-                key: "click",
-                value: helper.event.deleteLastDocWithFilter
-            });
-
-            buttonElement = helper.dom.elementBuilder(elementInfo, db);
-
-            helper.dom.appendInnerHTMLIO("remove last rent!", buttonElement);
-            helper.dom.appendChildNodeIO(buttonElement, selectDivParent);
-
-
+            views.parmaco.createButtonRemoveLastDocOfKind('rent', db, holderElement);
 
 //ADD ONE DOC rent
-            elementInfo = new helper.dom.ElementInfoConstructor();
-            elementInfo.kind = "button";
-
-            elementInfo.attribute.push({
-                key: "kind",
-                value: "rent"
-            });
-
-            elementInfo.event.push({
-                key: "click",
-                value: helper.event.addOneDocLastWithFilter
-            });
-
-            buttonElement = helper.dom.elementBuilder(elementInfo, db);
-            helper.dom.appendInnerHTMLIO("Add one rent!", buttonElement);
-            helper.dom.appendChildNodeIO(buttonElement, selectDivParent);
+            views.parmaco.createButtonAddOneDocOfKind('rent', db, holderElement);
             
 
 
 
-            function buildRent(event) {
-                numberOfElements = event.target.value;
-                seqArray = helper.arr.seqArrayFromLength(numberOfElements);
-                console.log(event);
-            }
+
 
             
-            numberOfElements = 0;
-            seqArray = helper.arr.seqArrayFromLength(numberOfElements);
+
             
 
 
-            function createDocs(arr, elementIdKind) {
-                return new Promise((resolve, reject) => {
-                    let docs = [];
-                    let index = 0;
-                    let timer = setInterval(function() {
-                        if (index < arr.length) {
-                            createDoc(db, arr[index++], elementIdKind)
-                            .then((doc) => {
-                                docs.push(doc);
-                            })
-                            .catch(() => {
-                                clearInterval(timer);
-                                reject();                        
-                            });
-                        } else {
-                            clearInterval(timer);
-                            resolve(docs);
-                        }
-                    }, 100);
-                })
-            }
+            
 
 
 

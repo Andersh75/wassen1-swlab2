@@ -617,6 +617,26 @@ var helper = {};
         deleteAllDocsWithFilter: my.curry(function (event, db) {
             let elementIdKind = event.target.attributes.kind.value;
             helper.pouch.deleteAllRowsWithFilter(db, elementIdKind);  
+        }),
+
+        addSelectedNumberOfDocsWithFilter: my.curry(function (event, db) {
+            let selectedValue;
+            let elementIdKind;
+            
+            selectedValue = helper.str.convertStrToNumber(event.target.value);
+            elementIdKind = event.target.attributes.kind.value;
+
+            helper.pouch.getLastElementIdNumber(db, elementIdKind)
+            .then((newElementIdNumber) => {
+                let newElementIdNumbers = helper.arr.seqArrayFromTo(newElementIdNumber, (newElementIdNumber + selectedValue - 1));
+                return newElementIdNumbers;
+            })
+            .then((newElementIdNumbers) => {
+                return createDocs(db, newElementIdNumbers, elementIdKind);
+            })
+            .then((docs) => {
+                return helper.pouch.postDocs(docs, db);
+            }); 
         })
     },
 

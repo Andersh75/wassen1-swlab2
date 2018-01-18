@@ -119,6 +119,114 @@ var views = {};
             console.log(element1);
 
             return element1;
+        }),
+
+        createButtonAddOneDocOfKind: my.curry(function (kind, db, parentElement) {
+            let buttonElement;
+            let elementInfo;
+
+            elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "button";
+
+            elementInfo.attribute.push({
+                key: "kind",
+                value: kind
+            });
+
+            elementInfo.event.push({
+                key: "click",
+                value: helper.event.addOneDocLastWithFilter
+            });
+
+            buttonElement = helper.dom.elementBuilder(elementInfo, db);
+            helper.dom.appendInnerHTMLIO("Add one rent!", buttonElement);
+            helper.dom.appendChildNodeIO(buttonElement, parentElement);
+        }),
+
+        createButtonRemoveLastDocOfKind: my.curry(function (kind, db, parentElement) {
+            let buttonElement;
+            let elementInfo;
+
+            elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "button";
+
+            elementInfo.attribute.push({
+                key: "kind",
+                value: kind
+            });
+
+            elementInfo.event.push({
+                key: "click",
+                value: helper.event.deleteLastDocWithFilter
+            });
+
+            buttonElement = helper.dom.elementBuilder(elementInfo, db);
+            helper.dom.appendInnerHTMLIO("remove last rent!", buttonElement);
+            helper.dom.appendChildNodeIO(buttonElement, parentElement);
+        }),
+
+        createButtonRemoveAllDocsOfKind: my.curry(function (kind, db, parentElement) {
+            let buttonElement;
+            let elementInfo;
+
+            elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "button";
+
+            elementInfo.attribute.push({
+                key: "kind",
+                value: kind
+            });
+
+            elementInfo.event.push({
+                key: "click",
+                value: helper.event.deleteAllDocsWithFilter
+            });
+
+            buttonElement = helper.dom.elementBuilder(elementInfo, db);
+            helper.dom.appendInnerHTMLIO("remove all!", buttonElement);
+            helper.dom.appendChildNodeIO(buttonElement, parentElement);
+        }),
+
+        createSelectAddSelectedNumberOfDocsOfKind: my.curry(function (kind, db, parentElement) {
+            let selectElement;
+            let elementInfo;
+            let optionValues = [1, 2, 3, 4, 5];
+
+            elementInfo = new helper.dom.ElementInfoConstructor();
+            elementInfo.kind = "select";
+
+            elementInfo.attribute.push({
+                key: "kind",
+                value: kind
+            });
+
+            elementInfo.event.push({
+                key: "change",
+                value: helper.event.addSelectedNumberOfDocsWithFilter
+            });
+
+            selectElement = helper.dom.elementBuilder(elementInfo, db);
+
+
+            optionValues.forEach((optionValue) => {
+
+                let elementInfo = new helper.dom.ElementInfoConstructor();
+                elementInfo.kind = "option";
+
+                elementInfo.attribute.push({
+                    key: "value",
+                    value: optionValue
+                });
+                
+                let optionElement = helper.dom.elementBuilder(elementInfo, db);
+
+                helper.dom.appendInnerHTMLIO(optionValue, optionElement);
+                helper.dom.appendChildNodeIO(optionElement, selectElement);
+
+            });
+
+            //helper.dom.appendInnerHTMLIO("remove all!", selectElement);
+            helper.dom.appendChildNodeIO(selectElement, parentElement);
         })
     };
 }).apply(views);
