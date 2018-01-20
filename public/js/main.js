@@ -310,7 +310,7 @@ function removeFromDom(filteredRows, elementIdKind) {
     console.log('IM HERE!');
     console.log(filteredRows);
 
-    let elements = helper.dom.selectAllElementsByAttribute('[container]');
+    let elements = helper.dom.getAllElementsByAttribute('[container]');
 
     elements = elements.filter((element) => {
         return element.attributes['container'].value === elementIdKind;
@@ -351,6 +351,8 @@ function nonsensFunction() {
 };
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    console.log(helper.str.getLastWordsFromStringUsingSplitter('hej-jag-är-inte-så-pigg', 3, '-'));
 
     var log = [];
     var remoteCouch = 'http://127.0.0.1:5984/kittens';
@@ -691,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // //DONE
 // function deleteAndReload(docId, id, db) {
-//     helper.pouch.deleteDoc(docId, db)
+//     helper.pouch.deleteDocById(docId, db)
 
 //         .catch(function () {
 //             console.log('error');

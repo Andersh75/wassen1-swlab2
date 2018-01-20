@@ -2,7 +2,9 @@ var helper = {};
 (function() {
 
 
-    // Map, Reduce, Filter
+    // Map, Reduce, Filter...
+    
+    //DONE
     this.map = my.curry(function(callback, array) {
         var newArray = [];
         for (var i = 0; i < array.length; i = i + 1) {
@@ -11,6 +13,7 @@ var helper = {};
         return newArray;
     });
 
+    //DONE
     this.reduce = my.curry(function(callback, initialValue, array) {
         var working = initialValue;
         //console.log('array:', typeof(initialValue));
@@ -25,7 +28,7 @@ var helper = {};
     //Functions
     this.functions = {
 
-
+        //DONE
         serialize: my.curry(function(newFunction) {
            return JSON.stringify(newFunction, function (key, value) {
             if (typeof value === 'function') {
@@ -34,6 +37,7 @@ var helper = {};
             return value;
         })}),
 
+        //DONE
         deSerialize: my.curry(function(newFunctionString) {
            return JSON.parse(newFunctionString, function (key, value) {
 
@@ -71,6 +75,7 @@ var helper = {};
     //Booleans
     this.boolean = {
 
+        //DONE
         //Null, undefined, empty array, empty object, empty string = empty
         isEmpty: my.curry(function(obj) {
             for (var prop in obj) {
@@ -84,36 +89,31 @@ var helper = {};
             return true;
         }),
 
+        //DONE
         isEven: my.curry(function(x) {
             return (x % 2 === 0);
         }),
 
+        //DONE
         isDefined: my.curry(function(item) {
             return (typeof item !== 'undefined')
         })
     };
-    
-
 
 
 
     //Strings
     this.str = {
 
+        //DONE
         /**
          * Adds a string to an accumulated string
          */
         adder: my.curry(function(acc, nextString) {
-        return acc + nextString;
+            return acc + nextString;
         }),
 
-        /**
-         * Tries if the first character is equal to the test character
-         */
-        startsWith: my.curry(function(str, test) {
-            return str.substring(0,2) === test;
-        }),
-
+        //DONE
         /**
          * Tries if the last character is equal to the test character
          */
@@ -121,19 +121,15 @@ var helper = {};
             return str.substring(str.length - 1) === test;
         }),
 
+        //DONE
         /**
-         * Returns the last word from a string using splitter function
+         * Tries if the first character is equal to the test character
          */
-        getLastWordFromStringUsingSpliter: my.curry(function(str, splitter) {
-            return str.split(splitter).pop();
+        startsWith: my.curry(function(str, test) {
+            return str.substring(0,2) === test;
         }),
 
-        /**
-         * Returns first word from a string using splitter function
-         */
-        getFirstWordFromStringUsingSpliter: my.curry(function(str, splitter) {
-            return str.split(splitter).slice(0, 1).join(" ");
-        }),
+        //DONE
         /**
          * Returns the first word from a string
          */
@@ -141,13 +137,15 @@ var helper = {};
             return str.split(" ").slice(0, 1).join(" ");
         }),
 
+        //DONE
         /**
-         * Returns the first words from a string
+         * Returns first word from a string using splitter
          */
-        getFirstWordsFromString: my.curry(function(str, count) {
-            return str.split(" ").slice(0, count).join(" ");
+        getFirstWordFromStringUsingSpliter: my.curry(function(str, splitter) {
+            return str.split(splitter).slice(0, 1).join(" ");
         }),
 
+        //DONE
         /**
          * Returns the last word from a string
          */
@@ -155,6 +153,31 @@ var helper = {};
             return str.split(" ").pop();
         }),
 
+        //DONE
+        /**
+         * Returns the last word from a string using splitter
+         */
+        getLastWordFromStringUsingSpliter: my.curry(function(str, splitter) {
+            return str.split(splitter).pop();
+        }),
+
+        //DONE
+        /**
+         * Returns the first words from a string
+         */
+        getFirstWordsFromString: my.curry(function(str, count) {
+            return str.split(" ").slice(0, count).join(" ");
+        }),
+
+        //DONE
+        /**
+         * Returns the first words from a string using splitter
+         */
+        getFirstWordsFromStringUsingSplitter: my.curry(function(str, count, splitter) {
+            return str.split(splitter).slice(0, count).join(splitter);
+        }),
+
+        //DONE
         /**
          * Returns the last words from a string
          */
@@ -162,6 +185,15 @@ var helper = {};
             return str.split(" ").slice(count, str.length).join(" ");
         }),
 
+        //DONE
+        /**
+         * Returns the last words from a string
+         */
+        getLastWordsFromStringUsingSplitter: my.curry(function(str, count, splitter) {
+            return str.split(splitter).slice(count, str.length).join(splitter);
+        }),
+
+        //DONE
         /**
          * Removes first word from a string and returns the rest
          */
@@ -169,47 +201,76 @@ var helper = {};
             return str.split(" ").slice(1).join(" ");
         }),
 
-/**
-         * Removes first words from a string and returns the rest
+        //DONE
+        /**
+         * Removes first word from a string and returns the rest
          */
-        removeFirstWordsFromString: my.curry(function(str, count) {
-            return str.split(" ").slice(count).join(" ");
+        removeFirstWordFromStringUsingSplitter: my.curry(function(str, splitter) {
+            return str.split(splitter).slice(1).join(" ");
         }),
 
+        //DONE
         /**
          * Removes the last word from at string and returns the mod string
          */
         removeLastWordFromString: my.curry(function(str) {
             //var shortStr = str.split(" ").pop();
             var strArr = str.split(" ");
-
             strArr.pop();
-
             var newStr = strArr.join(" ");
-
             return newStr;
         }),
 
+        //DONE
+        /**
+         * Removes the last word from at string and returns the mod string
+         */
+        removeLastWordFromStringUsingSplitter: my.curry(function(str, splitter) {
+            //var shortStr = str.split(" ").pop();
+            var strArr = str.split(splitter);
+            strArr.pop();
+            var newStr = strArr.join(" ");
+            return newStr;
+        }),
+
+        /**
+         * Removes first words from a string and returns the rest
+         */
+        removeFirstWordsFromString: my.curry(function(str, count) {
+            return str.split(" ").slice(count).join(" ");
+        }),
+
+        //DONE
+        /**
+         * Removes first words from a string and returns the rest
+         */
+        removeFirstWordsFromStringUsingSplitter: my.curry(function(str, count, splitter) {
+            return str.split(splitter).slice(count).join(splitter);
+        }),
+
+        //DONE
          /**
          * Removes the last words from a string
          */
         removeLastWordsFromString: my.curry(function(str, count) {
-
             return str.split(" ").slice(0, - count).join(" ");
         }),
 
+        //DONE
+        /**
+         * Removes the last words from a string
+         */
+        removeLastWordsFromStringUsingSplitter: my.curry(function(str, count, splitter) {
+            return str.split(splitter).slice(0, - count).join(splitter);
+        }),
+
+        //DONE
         /**
          * Converts a string into number
          */
-        convertStrToNumber: my.curry((str) => {
+        convertStringToNumber: my.curry((str) => {
             return  Number(str);
-        })
-
-        
-        
-       
-
-        
+        })    
     };
 
 
@@ -266,100 +327,30 @@ var helper = {};
         })
     };
 
-
-    //Events
-    this.events = (function(){
-        var topics = {};
-        var hOP = topics.hasOwnProperty;
-      
-        return {
-          subscribe: function(topic, listener) {
-            // Create the topic's object if not yet created
-            if(!hOP.call(topics, topic)) topics[topic] = [];
-      
-            // Add the listener to queue
-            var index = topics[topic].push(listener) -1;
-      
-            // Provide handle back for removal of topic
-            return {
-              remove: function() {
-                delete topics[topic][index];
-              }
-            };
-          },
-          publish: function(topic, info) {
-            // If the topic doesn't exist, or there's no listeners in queue, just leave
-            if(!hOP.call(topics, topic)) return;
-      
-            // Cycle through topics queue, fire!
-            topics[topic].forEach(function(item) {
-                    item(info != undefined ? info : {});
-            });
-          }
-        };
-    })();
     
     
-    //Requests
-    this.requestPostJson = my.curry(function(baseString, requestString, data) {
-            return new Promise((resolve, reject) => {
-                var request = new XMLHttpRequest();
-                request.open('POST', baseString + requestString, true);
-                //console.log(baseString + requestString);
-                //console.log(JSON.stringify(data));
-                request.setRequestHeader('Content-type', 'application/json');
-                request.send(JSON.stringify(data));
-                request.onreadystatechange = function () {
-                    if (request.readyState === 4 && request.status === 200) {
-                        resolve(request.response);
-                    }
-                };
-            });
-        });
-
-        
-
-
-    this.requestGetJson = my.curry(function(baseString, requestString) {
-        return new Promise((resolve, reject) => {
-            var request = new XMLHttpRequest();
-            request.open('GET', baseString + requestString);
-            request.responseType = 'application/json';
-            request.send();
-           // console.log('here...');
-            request.onreadystatechange = function () {
-                // console.log(baseString + requestString);
-                // console.log(request.readyState);
-                // console.log(request.status);
-                if (request.readyState === 4 && request.status === 200) {
-                    //console.log(request.response);
-                    resolve(JSON.parse(request.response));
-                    
-                }
-                if (request.readyState === 4 && request.status !== 200) {
-                    //console.log(request.response);
-                    //throw 'Uh-oh! rejected message';
-                    reject('meddelande');
-                    
-                }
-            };
-        });
-    });
-
-
 
     //DOM
     this.dom = {
 
+        //DONE
         appendInnerHTMLIO: my.curry(function(inner, outer) {
             outer.innerHTML = inner;
             return outer;
         }),
+
+        //DONE
         appendInnerHTMLOI: my.curry(function(el, inner) {
             el.innerHTML = inner;
             return el;
         }),
 
+        //DONE
+        wrapStringInTag: my.curry(function(tag, str) {
+            return '<' + tag + '>' + str + '</' + tag + '>';
+        }),
+
+        //DONE
         /**
          * Appends child node to parent @param child the inner element @param parent the outer element
          */
@@ -367,19 +358,77 @@ var helper = {};
             parent.appendChild(child);
             return parent;
         }),
+
+        //DONE
         appendChildNodeOI: my.curry(function(el, child) {
             el.appendChild(child);
             return el;
         }),
+
+        //DONE
+        appendChildNodesOnId: my.curry(function(builtElements, id) {
+            let myId = helper.dom.getElement("id", id);
+                builtElements.forEach((builtElement) => {
+                    helper.dom.appendChildNodeIO(builtElement, myId);
+                });
+
+            return myId;
+        }),
+
+        //DONE
+        appendChildNodesIO: my.curry(function(builtElements, parentElement) {
+            builtElements.forEach((builtElement) => {
+                helper.dom.appendChildNodeIO(builtElement, parentElement);
+            });
+
+            return parentElement;
+        }),
+
+        //DONE
+        appendChildNodesOI: my.curry(function(parentElement, builtElements) {
+            builtElements.forEach((builtElement) => {
+                helper.dom.appendChildNodeOI(parentElement, builtElement);
+            });
+
+            return parentElement;
+        }),
+
+        //DONE
+        removeChildrenUntil: my.curry(function(el, numb) {
+            while (el.children.length > numb) {
+            el.removeChild(el.lastChild);
+            }
+
+            return el;
+        }),
+
+        //DONE
+        removeAllChildren: my.curry(function(el) {
+            while (el.children.length > 0) {
+            el.removeChild(el.lastChild);
+            }
+            return el;
+        }),
+
+        //NOT DONE
         appendSiblingNodeCS: my.curry(function(el, sibling) {
             el.insertAdjacentElement('afterend',sibling);
             return el;
         }),
-        check: my.curry(function(el) {
+
+        //DONE
+        boxChecker: my.curry(function(el) {
             el.checked = true;
             return el;
         }),
 
+        //DONE
+        boxUnchecker: my.curry(function(el) {
+            el.checked = false;
+            return el;
+        }),
+
+        //DONE
         /**
          * Creates element. @param tag kind of element
          */
@@ -387,7 +436,7 @@ var helper = {};
             return document.createElement(tag);
         }),
 
-       
+       //DONE
        /**
         * Gets element. @param kind ether "id" or "class" @param name the name of the kind
         */
@@ -399,19 +448,23 @@ var helper = {};
                 case 'class':
                     return document.getElementsByClassName(name);
                     break;
+                case 'tag':
+                    return document.getElementsByTagName(name);
+                    break;
             }   
         }),
-        removeChildrenUntil: my.curry(function(el, numb) {
-            while (el.children.length > numb) {
-            el.removeChild(el.lastChild);
-            }
-        }),
-        removeAllChildren: my.curry(function(el) {
-            while (el.children.length > 0) {
-            el.removeChild(el.lastChild);
-            }
+
+        //makes a node list with the specified attribute from from DOM. Slices the node list into an array
+        getAllElementsByAttribute: my.curry(function(elementAtrribute) {
+            return [].slice.call(document.querySelectorAll(elementAtrribute));
         }),
 
+        //DONE
+        getAttribute: my.curry(function(attribute, el) {
+            return el.getAttribute(attribute); 
+        }),
+
+        //DONE
         /**
          * Sets attribute to element 
          * @param {string} key 
@@ -423,38 +476,22 @@ var helper = {};
             return el;
         }),
 
+        //DONE
         setStyle: my.curry(function(key, value, el) {
             el.style[key] = value;
             return el;
         }),
 
-        uncheck: my.curry(function(el) {
-            el.checked = false;
-            return el;
-        }),
-        wrapTag: my.curry(function(tag, str) {
-            return '<' + tag + '>' + str + '</' + tag + '>';
-        }),
-
-        getAttribute: my.curry(function(attribute, el) {
-            return el.getAttribute(attribute);
-            
-        }),
-
+        //DONE
         /**
          * Creates a new element
          */
         elementBuilder: my.curry(function (testingObject, db) {
-
             //check if element exists
             if (helper.boolean.isDefined(testingObject.kind)) {
                 
                  //create element
                 let element = helper.dom.createElement(testingObject.kind);
-
-                //wraps div around element
-                // let elementWrapper = helper.dom.createElement("div");
-                // helper.dom.appendChildNodeIO(element, elementWrapper);
                
                 //sets attributes
                 if (helper.boolean.isDefined(testingObject.attribute)) {
@@ -484,100 +521,25 @@ var helper = {};
                        item.value(event, db);
                     });
                 });
-
-                //console.log(element);
-
-                
-                // if(testingObject.element === "option") {
-                  
-    
-                //     elementWrapper = element;
-                // }
-
-                // elementWrapper = element;
                
                 return element;
-
-
             }
         }),
 
-
+        //DONE
         /**
          * Constructs an empty element info object
          */
         ElementInfoConstructor: my.curry(function () {
             this.kind = "";
-            this.attribute = [
-
-            ];
-            this.style = [
-
-
-            ];
-            this.textNode = [
-
-            ];
-
-            this.event = [
-
-            ];
-        }),
-
-
-        /**
-         * Constructs array with element info from database array
-         */
-        constructElementInfoFromDb: my.curry(function(rows) {
-
-            let elementInfos = rows.map((item) => {
-
-                let elementInfo = new helper.dom.ElementInfoConstructor();
-                elementInfo.kind = "input";
-                elementInfo.attribute.push({
-                    key: "dbName",
-                    value: item.doc.dbName
-
-                });
-                elementInfo.attribute.push({
-                    key: "placeholder",
-                    value: item.doc.country
-
-                });
-                elementInfo.attribute.push({
-                    key: "written",
-                    value: item.doc.written
-
-                });
-                elementInfo.attribute.push({
-                    key: "_id",
-                    value: item.doc._id
-
-                });
-                elementInfo.attribute.push({
-                    key: "_rev",
-                    value: item.doc._rev
-
-                });
-                
-                return elementInfo;
-            });
-
-            return elementInfos;
-
-        }),
-
-        appendBuiltElementsOnId: my.curry(function(builtElements, id) {
-            let myId = helper.dom.getElement("id", id);
-                builtElements.forEach((builtElement) => {
-                    helper.dom.appendChildNodeIO(builtElement, myId);
-                });
-        }),
-
-        //makes a node list with the specified attribute from from DOM. Slices the node list into an array
-        selectAllElementsByAttribute: my.curry(function(elementAtrribute) {
-            return [].slice.call(document.querySelectorAll(elementAtrribute));
+            this.attribute = [];
+            this.style = [];
+            this.textNode = [];
+            this.event = [];
         })
+
+
+
          
       
 
@@ -594,7 +556,7 @@ var helper = {};
             })
             .then((rows) => {
                 console.log(rows);
-                removeFromDom(rows, elementIdKind); 
+                return removeFromDom(rows, elementIdKind); 
             });   
         }),
 
@@ -630,7 +592,7 @@ var helper = {};
                 return helper.pouch.getLastRowWithFilter(db, elementIdKind);
             })
             .then((row) => {
-                views.parmaco.createElementOfKind(elementIdKind + '-elements-box', elementIdKind, db, row);
+                return views.parmaco.createElementOfKind(elementIdKind + '-elements-box', elementIdKind, db, row);
             }); 
         }),
 
@@ -641,7 +603,7 @@ var helper = {};
                 return helper.pouch.getAllRows(db);
             })
             .then((rows) => {
-                removeFromDom(rows, elementIdKind); 
+                return removeFromDom(rows, elementIdKind); 
             });    
         }),
 
@@ -649,7 +611,7 @@ var helper = {};
             let selectedValue;
             let elementIdKind;
             
-            selectedValue = helper.str.convertStrToNumber(event.target.value);
+            selectedValue = helper.str.convertStringToNumber(event.target.value);
             elementIdKind = event.target.attributes.kind.value;
 
             helper.pouch.getLastElementIdNumber(db, elementIdKind)
@@ -666,7 +628,7 @@ var helper = {};
         }),
 
         detectClickFunction: my.curry(function (event, db) {
-           // console.log(event);
+           return console.log(event);
         }),
 
         detectKeybordFunction: my.curry(function (event, db) {
@@ -709,10 +671,123 @@ var helper = {};
     //POUCH
     this.pouch = {
 
+        //DONE
+        fetchAll: my.curry(function(db) {
+            return db.allDocs({
+                include_docs: true,
+                conflicts: true
+            });
+        }),
 
+        //DONE
+        deleteDoc: my.curry(function (doc, db) {
+            return new Promise(function (resolve, reject) {
+                doc._deleted = true;
+                doc.written = new Date().toISOString();
+                resolve(db.put(doc));
+            });
+        }),
+
+        //DONE
+        deleteDocById: my.curry(function (docId, db) {
+            return helper.pouch.getDoc(docId, db)
+                .then((doc) => helper.pouch.deleteDoc(doc, db));
+        }),
+
+        //DONE
+        getDoc: my.curry(function (docId, db) {
+            return db.get(docId, {
+                conflicts: true,
+                include_docs: true
+            });
+        }),
+
+        //DONE
+        postDoc: my.curry(function (doc, db) {
+            return db.put(doc);
+        }),
+
+        //DONE
+        putDoc: my.curry(function (doc, db) {
+            return db.put(doc);
+        }),
+
+        //DONE
+        postDocs: my.curry(function (docs, db) {
+            return db.bulkDocs(docs);
+        }),
+
+        //DONE
+        deleteRows: my.curry(function (rows, db) {
+            return rows.forEach((row) => {
+                helper.pouch.deleteDoc(row.doc, db);    
+            });
+        }),
+
+        //DONE
+        deleteAllRowsWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRowsWithFilter(db, filter)
+            .then((filteredRows) => {
+                return helper.pouch.deleteRows(filteredRows, db);
+            });
+        }),
+
+        //DONE
+        deleteLastRowWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRowsWithFilter(db, filter)
+            .then((filteredRows) => {
+                let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
+
+                if (!helper.boolean.isEmpty(sortedFilteredRows)) {
+                    let idOfDocToRemove = sortedFilteredRows[0].id;
+                    return helper.pouch.deleteDocById(idOfDocToRemove, db);
+                }   
+            });
+        }),
+
+        //DONE
+        getAllRows: my.curry(function (db) {
+            return helper.pouch.fetchAll(db)
+                .then((docs) => {
+                    return docs.rows;
+                });
+        }),
+
+        //DONE
+        getAllRowsWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRows(db)
+                .then((rows) => {
+                    let filteredRows = rows.filter((row) => {
+                        return row.doc.kind === filter;
+                    });
+                    return filteredRows;
+                });
+        }),
+
+        //DONE
+        getLastRowWithFilter: my.curry(function (db, filter) {
+            return helper.pouch.getAllRowsWithFilter(db, filter)
+            .then((filteredRows) => {
+                let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
+
+                if (!helper.boolean.isEmpty(sortedFilteredRows)) {
+                    return sortedFilteredRows[0];
+                }   
+            });
+        }),
+
+
+        //DONE
         sortRows: my.curry(function (rows, sortParameter, direction) {
             let sortedRows = helper.arr.sortArray(rows, sortParameter, direction);
             return sortedRows;
+        }),
+
+
+
+
+        deleteRevision: my.curry(function (rev, docId, db) {
+            return db.remove(docId, rev);
         }),
 
         getConflictRows: my.curry(function (docs) {
@@ -734,106 +809,6 @@ var helper = {};
             return db.get(id, { rev: previousRev, include_docs: true });
         }),
 
-        deleteRevision: my.curry(function (rev, docId, db) {
-            db.remove(docId, rev);
-        }),
-
-        deleteDoc: my.curry(function (docId, db) {
-            return helper.pouch.getDoc(docId, db)
-                .then((doc) => helper.pouch.removeDoc(doc, db));
-        }),
-
-        deleteRows: my.curry(function (rows, db) {
-            return rows.forEach((row) => {
-                helper.pouch.removeDoc(row.doc, db);    
-            });
-        }),
-
-        removeDoc: my.curry(function (doc, db) {
-            return new Promise(function (resolve, reject) {
-                doc._deleted = true;
-                doc.written = new Date().toISOString();
-                resolve(db.put(doc));
-            });
-        }),
-
-        getDoc: my.curry(function (docId, db) {
-            return db.get(docId, {
-                conflicts: true,
-                include_docs: true
-            });
-        }),
-
-        postDoc: my.curry(function (doc, db) {
-            return db.put(doc);
-        }),
-
-        putDoc: my.curry(function (doc, db) {
-            return db.put(doc);
-        }),
-
-        postDocs: my.curry(function (docs, db) {
-            return db.bulkDocs(docs);
-        }),
-
-        fetchAll: my.curry(function(db) {
-            return db.allDocs({
-                include_docs: true,
-                conflicts: true
-            });
-        }),
-
-        getAllRows: my.curry(function (db) {
-            return helper.pouch.fetchAll(db)
-                .then((docs) => {
-                    //console.log("docs")
-                    //console.log(docs);
-                    return docs.rows;
-                });
-        }),
-
-        getAllRowsWithFilter: my.curry(function (db, filter) {
-            return helper.pouch.getAllRows(db)
-                .then((rows) => {
-                    let filteredRows = rows.filter((row) => {
-                        return row.doc.kind === filter;
-                    });
-                    //console.log("filteredRows");
-                    //console.log(filteredRows);
-                    return filteredRows;
-                });
-        }),
-
-        deleteAllRowsWithFilter: my.curry(function (db, filter) {
-            return helper.pouch.getAllRowsWithFilter(db, filter)
-            .then((filteredRows) => {
-                return helper.pouch.deleteRows(filteredRows, db);
-            });
-        }),
-
-        deleteLastRowWithFilter: my.curry(function (db, filter) {
-            return helper.pouch.getAllRowsWithFilter(db, filter)
-            .then((filteredRows) => {
-                let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
-
-                if (!helper.boolean.isEmpty(sortedFilteredRows)) {
-                    let idOfDocToRemove = sortedFilteredRows[0].id;
-                    return helper.pouch.deleteDoc(idOfDocToRemove, db);
-                }   
-            });
-        }),
-
-        getLastRowWithFilter: my.curry(function (db, filter) {
-            return helper.pouch.getAllRowsWithFilter(db, filter)
-            .then((filteredRows) => {
-                let sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
-
-                if (!helper.boolean.isEmpty(sortedFilteredRows)) {
-                    return sortedFilteredRows[0];
-                }   
-            });
-        }),
-
 
         getLastElementIdNumber: my.curry(function (db, elementIdKind) {
             return helper.pouch.getAllRowsWithFilter(db, elementIdKind)
@@ -847,7 +822,7 @@ var helper = {};
                     sortedFilteredRows = helper.pouch.sortRows(filteredRows, 'id', "desc");
                     elementIdOfLastDoc = sortedFilteredRows[0].doc.elementId;
                     elementIdNumberOfLastDoc = helper.str.getLastWordFromStringUsingSpliter(elementIdOfLastDoc, "-");
-                    newElementIdNumber = helper.str.convertStrToNumber(elementIdNumberOfLastDoc) + 1;
+                    newElementIdNumber = helper.str.convertStringToNumber(elementIdNumberOfLastDoc) + 1;
                 } else {
                     newElementIdNumber = 1;
                 }
@@ -873,29 +848,7 @@ var helper = {};
                    doc[parameter.key] = parameter.value;
                 });
        
-                //console.log(doc);
-       
                 resolve(doc);
-            });
-        }),
-
-        editDoc: my.curry(function (doc, parameters) {
-            parameters.forEach((parameter) => {
-                doc[parameter.key] = parameter.value;
-            });
-
-            doc.written = new Date().toISOString();
-        
-            return doc;
-        }),
-
-        editDocByIdAndPut: my.curry(function (dbId, db, parameters) {
-            helper.pouch.getDoc(dbId, db)
-            .then((doc) => {
-                return helper.pouch.editDoc(doc, parameters);
-            })
-            .then((editedDoc) => {
-                helper.pouch.putDoc(editedDoc, db);
             });
         }),
 
@@ -938,9 +891,44 @@ var helper = {};
                     }
                 }, 100);
             });
+        }),
+
+        //DONE
+        editDoc: my.curry(function (doc, parameters) {
+            parameters.forEach((parameter) => {
+                doc[parameter.key] = parameter.value;
+            });
+
+            doc.written = new Date().toISOString();
+        
+            return doc;
+        }),
+
+        //DONE
+        editDocById: my.curry(function (docId, db, parameters) {
+            return helper.pouch.getDoc(docId, db)
+            .then((doc) => {
+                return helper.pouch.editDoc(doc, parameters);
+            })
+        }),
+
+        //DONE
+        editDocAndPut: my.curry(function (doc, db, parameters) {
+            let editedDoc = helper.pouch.editDoc(doc, parameters);
+            return helper.pouch.putDoc(editedDoc, db);
+        }),
+
+        //DONE
+        editDocByIdAndPut: my.curry(function (docId, db, parameters) {
+            return helper.pouch.editDocById(docId, db, parameters)
+            .then((editedDoc) => {
+                return helper.pouch.putDoc(editedDoc, db);
+            });
         })
         
-    }
+    };
+
+
 
 
 
@@ -994,6 +982,84 @@ Set.prototype.difference = function(setB) {
     return difference;
 }
 
+
+
+
+//     //Events
+//     this.events = (function(){
+//         var topics = {};
+//         var hOP = topics.hasOwnProperty;
+      
+//         return {
+//           subscribe: function(topic, listener) {
+//             // Create the topic's object if not yet created
+//             if(!hOP.call(topics, topic)) topics[topic] = [];
+      
+//             // Add the listener to queue
+//             var index = topics[topic].push(listener) -1;
+      
+//             // Provide handle back for removal of topic
+//             return {
+//               remove: function() {
+//                 delete topics[topic][index];
+//               }
+//             };
+//           },
+//           publish: function(topic, info) {
+//             // If the topic doesn't exist, or there's no listeners in queue, just leave
+//             if(!hOP.call(topics, topic)) return;
+      
+//             // Cycle through topics queue, fire!
+//             topics[topic].forEach(function(item) {
+//                     item(info != undefined ? info : {});
+//             });
+//           }
+//         };
+//     })();
+
+
+//     //Requests
+//     this.requestPostJson = my.curry(function(baseString, requestString, data) {
+//         return new Promise((resolve, reject) => {
+//             var request = new XMLHttpRequest();
+//             request.open('POST', baseString + requestString, true);
+//             //console.log(baseString + requestString);
+//             //console.log(JSON.stringify(data));
+//             request.setRequestHeader('Content-type', 'application/json');
+//             request.send(JSON.stringify(data));
+//             request.onreadystatechange = function () {
+//                 if (request.readyState === 4 && request.status === 200) {
+//                     resolve(request.response);
+//                 }
+//             };
+//         });
+//     });
+
+// this.requestGetJson = my.curry(function(baseString, requestString) {
+//     return new Promise((resolve, reject) => {
+//         var request = new XMLHttpRequest();
+//         request.open('GET', baseString + requestString);
+//         request.responseType = 'application/json';
+//         request.send();
+//        // console.log('here...');
+//         request.onreadystatechange = function () {
+//             // console.log(baseString + requestString);
+//             // console.log(request.readyState);
+//             // console.log(request.status);
+//             if (request.readyState === 4 && request.status === 200) {
+//                 //console.log(request.response);
+//                 resolve(JSON.parse(request.response));
+                
+//             }
+//             if (request.readyState === 4 && request.status !== 200) {
+//                 //console.log(request.response);
+//                 //throw 'Uh-oh! rejected message';
+//                 reject('meddelande');
+                
+//             }
+//         };
+//     });
+// });
 
 
 
@@ -1179,5 +1245,45 @@ Set.prototype.difference = function(setB) {
 //         })
 // };
 
+        /**
+         * Constructs array with element info from database array
+         */
+        // constructElementInfoFromDb: my.curry(function(rows) {
 
+        //     let elementInfos = rows.map((item) => {
+
+        //         let elementInfo = new helper.dom.ElementInfoConstructor();
+        //         elementInfo.kind = "input";
+        //         elementInfo.attribute.push({
+        //             key: "dbName",
+        //             value: item.doc.dbName
+
+        //         });
+        //         elementInfo.attribute.push({
+        //             key: "placeholder",
+        //             value: item.doc.country
+
+        //         });
+        //         elementInfo.attribute.push({
+        //             key: "written",
+        //             value: item.doc.written
+
+        //         });
+        //         elementInfo.attribute.push({
+        //             key: "_id",
+        //             value: item.doc._id
+
+        //         });
+        //         elementInfo.attribute.push({
+        //             key: "_rev",
+        //             value: item.doc._rev
+
+        //         });
+                
+        //         return elementInfo;
+        //     });
+
+        //     return elementInfos;
+
+        // }),
 
