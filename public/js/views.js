@@ -1,8 +1,6 @@
 var views = {};
 (function() {
 
-
-    //Functions
     this.parmaco = {
 
 
@@ -21,9 +19,6 @@ var views = {};
     
             helper.dom.appendInnerHTMLIO(element4, element3);
     
-            console.log("element3");
-            console.log(element3);
-    
     
             let info2 = new helper.dom.ElementInfoConstructor();
             info2.kind = "div";
@@ -35,15 +30,8 @@ var views = {};
     
             let element2 = helper.dom.elementBuilder(info2, db);
 
-            console.log('element2');
-            console.log(element2);
-            console.log('element3');
-            console.log(element3);
-
     
             helper.dom.appendChildNodeIO(element3, element2);
-    
-            console.log(element2);
     
     
             let info1 = new helper.dom.ElementInfoConstructor();
@@ -57,9 +45,6 @@ var views = {};
             let element1 = helper.dom.elementBuilder(info1, db);
     
             helper.dom.appendChildNodeIO(element2, element1);
-    
-            console.log(element1);
-    
     
     
             let info4 = new helper.dom.ElementInfoConstructor();
@@ -86,7 +71,8 @@ var views = {};
                 },
                 {
                     key: "placeholder",
-                    value: "Enter your name"
+                    //value: "Enter your name"
+                    value: nonsensFunction()
                 },
                 {
                     key: "id",
@@ -132,8 +118,6 @@ var views = {};
     
             element4 = helper.dom.elementBuilder(info4, db);
     
-            console.log(element4);
-    
     
             info3 = new helper.dom.ElementInfoConstructor();
             info3.kind = "form";
@@ -146,8 +130,6 @@ var views = {};
             element3 = helper.dom.elementBuilder(info3, db);
     
             helper.dom.appendChildNodeIO(element4, element3);
-    
-            console.log(element3);
     
     
             info2 = new helper.dom.ElementInfoConstructor();
@@ -162,8 +144,6 @@ var views = {};
     
             helper.dom.appendChildNodeIO(element3, element2);
     
-            console.log(element2);
-    
     
             helper.dom.appendChildNodeIO(element2, element1);
 
@@ -175,17 +155,26 @@ var views = {};
                 key: "class",
                 value: "forms-box"
             });
+
+            info0.attribute.push({
+                key: "contained-dbid",
+                value: filteredRow.doc._id
+            });
+
+            info0.attribute.push({
+                key: "container",
+                value: filteredRow.doc.kind
+            });
     
             element0 = helper.dom.elementBuilder(info0, db);
     
             helper.dom.appendChildNodeIO(element1, element0);
-    
-    
-            console.log(element0);
+
 
             return element0;
         }),
 
+        //DONE
         createButtonAddOneDocOfKind: my.curry(function (kind, db, parentElement) {
             let buttonElement;
             let elementInfo;
@@ -205,9 +194,10 @@ var views = {};
 
             buttonElement = helper.dom.elementBuilder(elementInfo, db);
             helper.dom.appendInnerHTMLIO("Add one " + kind, buttonElement);
-            helper.dom.appendChildNodeIO(buttonElement, parentElement);
+            return helper.dom.appendChildNodeIO(buttonElement, parentElement);
         }),
 
+        //DONE
         createButtonRemoveLastDocOfKind: my.curry(function (kind, db, parentElement) {
             let buttonElement;
             let elementInfo;
@@ -227,9 +217,10 @@ var views = {};
 
             buttonElement = helper.dom.elementBuilder(elementInfo, db);
             helper.dom.appendInnerHTMLIO("remove last " + kind, buttonElement);
-            helper.dom.appendChildNodeIO(buttonElement, parentElement);
+            return helper.dom.appendChildNodeIO(buttonElement, parentElement);
         }),
 
+        //DONE
         createButtonRemoveAllDocsOfKind: my.curry(function (kind, db, parentElement) {
             let buttonElement;
             let elementInfo;
@@ -249,9 +240,10 @@ var views = {};
 
             buttonElement = helper.dom.elementBuilder(elementInfo, db);
             helper.dom.appendInnerHTMLIO("remove all " + kind, buttonElement);
-            helper.dom.appendChildNodeIO(buttonElement, parentElement);
+            return helper.dom.appendChildNodeIO(buttonElement, parentElement);
         }),
 
+        //NOT DONE
         createSelectAddSelectedNumberOfDocsOfKind: my.curry(function (kind, db, parentElement) {
             let selectElement;
             let elementInfo;
@@ -294,6 +286,7 @@ var views = {};
             helper.dom.appendChildNodeIO(selectElement, parentElement);
         }),
 
+        //DONE
         createButtonsRowOfKind: my.curry(function (holderId, kind, db) {
             let holderElement = helper.dom.getElement("id", holderId);
 
@@ -301,9 +294,12 @@ var views = {};
             views.parmaco.createButtonRemoveAllDocsOfKind(kind, db, holderElement);
             views.parmaco.createButtonRemoveLastDocOfKind(kind, db, holderElement);
             views.parmaco.createButtonAddOneDocOfKind(kind, db, holderElement);
+
+            return holderElement;
         }),
 
-        createAllElementsOfKind: my.curry(function (holderId, kind, db) {
+        //NOT DONE
+        createElementsOfKind: my.curry(function (holderId, kind, db) {
             let holderElement = helper.dom.getElement("id", holderId);
 
             helper.pouch.getAllRowsWithFilter(db, kind)
@@ -317,6 +313,14 @@ var views = {};
             });
         }),
 
+        //DONE
+        createElementOfKind: my.curry(function (holderId, kind, db, row) {
+            let holderElement = helper.dom.getElement("id", holderId);
+            let element = views.parmaco.form(kind, db, row);
+            helper.dom.appendChildNodeIO(element, holderElement);
+        }),
+
+        //DONE
         createHeadlineOfKind: my.curry(function (holderId, kind, db) {
             let elementInfo = new helper.dom.ElementInfoConstructor();
 
@@ -334,7 +338,8 @@ var views = {};
             helper.dom.appendChildNodeIO(elementH1, holderElement);
         }),
 
-        createBoxForAllElementsOfKind: my.curry(function (holderId, kind, db) {
+        //DONE
+        createBoxForElementsOfKind: my.curry(function (holderId, kind, db) {
             let elementInfo = new helper.dom.ElementInfoConstructor();
 
             elementInfo.kind = 'div';
@@ -344,32 +349,16 @@ var views = {};
             });
             elementInfo.attribute.push({
                 key: "id",
-                value: kind + "-allelementsofkind-box"
+                value: kind + "-elements-box"
             });
 
             let elementDiv = helper.dom.elementBuilder(elementInfo, db);
-
-
-            elementInfo = new helper.dom.ElementInfoConstructor();
-
-            elementInfo.kind = 'div';
-            elementInfo.attribute.push({
-                key: "class",
-                value: "forms-box"
-            });
-            elementInfo.attribute.push({
-                key: "id",
-                value: kind + "-forms-box"
-            });
-
-            let elementDivChild = helper.dom.elementBuilder(elementInfo, db);
-
-            helper.dom.appendChildNodeIO(elementDivChild, elementDiv);
 
             let holderElement = helper.dom.getElement('id', holderId);
             helper.dom.appendChildNodeIO(elementDiv, holderElement);
         }),
 
+        //DONE
         createBoxForSection: my.curry(function (holderId, kind, db) {
             let elementInfo = new helper.dom.ElementInfoConstructor();
 
@@ -381,10 +370,11 @@ var views = {};
 
             let elementDiv = helper.dom.elementBuilder(elementInfo, db);
 
-            let holderElement = helper.dom.getElement('id', 'main');
+            let holderElement = helper.dom.getElement('id', holderId);
             helper.dom.appendChildNodeIO(elementDiv, holderElement);
         }),
 
+        //DONE
         createBoxForHeadline: my.curry(function (holderId, kind, db) {
             elementInfo = new helper.dom.ElementInfoConstructor();
 
@@ -405,6 +395,7 @@ var views = {};
             helper.dom.appendChildNodeIO(elementDiv, holderElement);
         }),
 
+        //DONE
         createBoxForButtonsRow: my.curry(function (holderId, kind, db) {
             elementInfo = new helper.dom.ElementInfoConstructor();
 
@@ -425,6 +416,7 @@ var views = {};
             helper.dom.appendChildNodeIO(elementDiv, holderElement);
         }),
 
+        //DONE
         createSection: my.curry(function (kind, db) {
             views.parmaco.createBoxForSection('main', kind, db);
             views.parmaco.createBoxForHeadline(kind + '-box', kind, db);
@@ -433,8 +425,8 @@ var views = {};
             views.parmaco.createBoxForButtonsRow(kind + '-box', kind, db);
             views.parmaco.createButtonsRowOfKind(kind + '-buttonsrow-box', kind, db);
 
-            views.parmaco.createBoxForAllElementsOfKind(kind + '-box', kind, db);
-            views.parmaco.createAllElementsOfKind(kind + '-allelementsofkind-box', kind, db);
+            views.parmaco.createBoxForElementsOfKind(kind + '-box', kind, db);
+            views.parmaco.createElementsOfKind(kind + '-elements-box', kind, db);
         })
     };
 

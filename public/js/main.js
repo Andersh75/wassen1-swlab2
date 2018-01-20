@@ -299,285 +299,58 @@ function conflictSolver(doc) {
 ////////////////////
 
 
-function fetchAllAndUpdate() {
-    helper.pouch.fetchAll(db)
-        .then((docs) => displayList(docs, 'countries', db));
-}
 
 
 
-//DONE     
-function postAndReload(domId, db) {
-    getValueFromField('', 'add-name')
-        .then((value) => postDoc(value, db))
-        .catch(function () {
-            console.log('error');
-        });
-}
 
 
-//DONE
-/**
- * Creates a document with id, country, written
- * @param {*} value 
- * @param {*} db 
- */
-function postDoc(value, db) {
-    return new Promise(function (resolve, reject) {
-        let doc = {
-            dbName: db.name,
-            _id: new Date().toISOString(),
-            country: value,
-            written: new Date().toISOString(),
-            kind: "country"
-        };
-        resolve(db.put(doc));
+
+
+function removeFromDom(filteredRows, elementIdKind) {
+    console.log('IM HERE!');
+    console.log(filteredRows);
+
+    let elements = helper.dom.selectAllElementsByAttribute('[container]');
+
+    elements = elements.filter((element) => {
+        return element.attributes['container'].value === elementIdKind;
     });
-}
 
-
-
-
-//Done
-function putAndReload(docId, id, db) {
-    getValueFromField('editField-', docId)
-        .then((value) => putDoc(value, docId, db))
-
-        .catch(function () {
-            console.log('error');
+    //console.log(elements[0].attributes['contained-dbid'].value);
+    let notAddeds = elements.filter((element) => {
+        let matching = [];
+        matching = filteredRows.filter((filteredRow) => {
+            //console.log(element.attributes['contained-dbid'].value);
+            return filteredRow.id === element.attributes['contained-dbid'].value;
         });
-}
-
-//DONE
-function putDoc(newValue, docId, db) {
-    return helper.pouch.getDoc(docId, db)
-        .then((doc) => editDoc(doc, newValue, db))
-        .catch((err) => console.log(err));
-}
-
-
-
-
-
-//DONE
-function editDoc(doc, newValue, db) {
-    return new Promise(function (resolve, reject) {
-        doc.country = newValue;
-        doc.written = new Date().toISOString();
-        resolve(db.put(doc));
-    });
-}
-
-//DONE
-function deleteAndReload(docId, id, db) {
-    helper.pouch.deleteDoc(docId, db)
-
-        .catch(function () {
-            console.log('error');
-        });
-}
-
-
-//DONE
-function getValueFromField(domIdPrefix, domIdSuffix) {
-    return new Promise(function (resolve, reject) {
-        var el = document.getElementById(domIdPrefix + domIdSuffix);
-        var value = el.value;
-        if (value) {
-            el.value = '';
-            resolve(value);
-        }
-    });
-}
-
-
-
-/// SKA BARA GÖRA EN RAD I TAGET - ÄNDRA ÄVEN FRÅN TABLE TILL DIV
-function displayList(countries, id, db) {
-    // console.log('db');
-    // console.log(db);
-    //var el = document.getElementById(id);
-    var el = helper.dom.getElement('id', id);
-
-    let data = '';
-    el.innerHTML = data;
-    if (countries.rows.length > 0) {
-        for (var i = 0; i < countries.rows.length; i++) {
-            let data = '';
-
-            data += '<td>' + countries.rows[i].doc.country + '</td>';
-            data += '<td><input type="text" id="' + "editField-" + countries.rows[i].doc._id + '"><button id="' + "editButton-" + countries.rows[i].doc._id + '">Edit</button></td>';
-            data += '<td><input type="text" id="' + "deleteField-" + countries.rows[i].doc._id + '"><button id="' + "deleteButton-" + countries.rows[i].doc._id + '">Delete</button></td>';
-
-            let tblrow = helper.dom.createElement('tr');
-            tblrow.innerHTML = data;
-            //el.innerHTML += data;
-
-            let editField = tblrow.children[1].children[0];
-            let editButton = tblrow.children[1].children[1];
-
-            editButton.addEventListener('click', function () {
-                //console.log('db in event listener');
-                //console.log(db);
-                putAndReload(editField.getAttribute('id').slice(10), 'countries', db);
-            });
-
-
-            let deleteField = tblrow.children[2].children[0];
-            let deleteButton = tblrow.children[2].children[1];
-
-            deleteButton.addEventListener('click', function () {
-                deleteAndReload(deleteField.getAttribute('id').slice(12), 'countries', db);
-            });
-
-            //console.log(tblrow.children[0].children[1].children[0].getAttribute('id'));
-
-            el.appendChild(tblrow);
-        }
-    }
-
-
-    return el;
-}
-
-
-
-/**
- * Saves info from DOM to db
- * @param {*} element DOM element
- * @param {*} dataKind DOM elements attribute
- * @param {*} serializedFunction function connected to element
- */
-function updateDBWithElementValue(element, dataKind, serializedFunction, db) {
-    return new Promise(function (resolve, reject) {
-        let doc;
-        let dbId = helper.dom.getAttribute('db-id', element);
-
-        console.log('dbID: ', dbId);
-
-        if (dbId === "") {
-            //prepares for database
-            doc = {
-                dbName: db.name,
-                _id: new Date().toISOString(),
-                elementId: helper.dom.getAttribute('id', element),
-                elementValue: element.value,
-                elementFunction: serializedFunction,
-                written: new Date().toISOString(),
-                kind: dataKind
-            };
-
-            db.put(doc)
-                .then(() => {
-                    resolve();
-                })
-
-            //pushes the update into document
-
-
-            //Sets database document id on element
-            helper.dom.setAttribute("db-id", doc._id, element);
+        //console.log(filteredRow.id);
+        console.log(matching);
+        if (!helper.boolean.isEmpty(matching)) {
+            return false;
         } else {
-            //gets doc from db and updates element from DOM value...
-            console.log('dbID: ', dbId);
-
-            helper.pouch.getDoc(dbId, db)
-                .then((doc) => {
-                    if (doc.elementValue !== element.value) {
-                        //updates document value on database
-                        doc.elementValue = element.value;
-                        //updates written 
-                        doc.written = new Date().toISOString();
-                        db.put(doc);
-                    }
-
-                    return doc;
-                })
-                .then((doc) => {
-                    console.log(doc);
-                    resolve();
-                });
+            return true;
         }
-    })
-}
-
-//DOES MULTIPLE THINGS!!!
-function updateDbWithNewElementValue(event, db) {
-
-    helper.dom.setAttribute('value', event.target.value, event.target);
-    let dbId = helper.dom.getAttribute("dbid", event.target);
-
-    console.log(dbId);
-    helper.pouch.getDoc(dbId, db)
-    .then((doc) => {
-        doc.elementValue = event.target.value;
-        return doc;
-    })
-    .then((doc) => {
-        helper.pouch.putDoc(doc, db);
+    });
+    console.log('not added');
+    console.log(notAddeds);
+    notAddeds.forEach((notAdded) => {
+        helper.dom.getElement('id', elementIdKind + '-elements-box').removeChild(notAdded);
     });
 }
 
 
-function createDoc(db, elementIdNumber, elementIdKind) {
-    return new Promise(function (resolve, reject) {
 
-         console.log('here!');
-        
-         
-         let serializedNonsensFunction = helper.functions.serialize(nonsensFunction);
 
-         let doc = {
-             dbName: db.name,
-             _id: new Date().toISOString(),
-             elementId: elementIdKind + "-" + elementIdNumber,
-             elementValue: "",
-             elementFunction: serializedNonsensFunction,
-             written: new Date().toISOString(),
-             kind: elementIdKind,
-         };
-
-         console.log(doc);
-
-         resolve(doc);
-     });
- }
-
- function createDocs(db, arr, elementIdKind) {
-    return new Promise((resolve, reject) => {
-        let docs = [];
-        let index = 0;
-        let timer = setInterval(function() {
-            if (index < arr.length) {
-                createDoc(db, arr[index++], elementIdKind)
-                .then((doc) => {
-                    docs.push(doc);
-                })
-                .catch(() => {
-                    clearInterval(timer);
-                    reject();                        
-                });
-            } else {
-                clearInterval(timer);
-                resolve(docs);
-            }
-        }, 100);
-    })
-}
 
 
 //test function
-function nonsensFunction(x, y) {
-    return x + y;
+function nonsensFunction() {
+
+    let elementValue = 5;
+    return elementValue;
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-
-    let testObj;
-
-    if (helper.boolean.isEmpty(testObj)) {
-        console.log("isDefined!");
-    }
 
     var log = [];
     var remoteCouch = 'http://127.0.0.1:5984/kittens';
@@ -590,10 +363,18 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (db) {
 
-            views.parmaco.createSection('rent', db);
-            views.parmaco.createSection('interest', db);
-            views.parmaco.createSection('heating', db);
-            views.parmaco.createSection('maintenance', db);
+
+
+            function refresh(db) {
+                let element = helper.dom.getElement('id', 'main');
+                helper.dom.removeAllChildren(element);
+                views.parmaco.createSection('rent', db);
+                views.parmaco.createSection('interest', db);
+                views.parmaco.createSection('heating', db);
+                views.parmaco.createSection('maintenance', db);
+            }
+
+            refresh(db);
 
 
             db.sync(remoteCouch, { live: true, retry: true, conflicts: true, include_docs: true })
@@ -623,6 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     else if ((info.direction == "push") && (info.change.docs.length < 2)) {
                         console.log("Normal push");
                         console.log(info);
+                        //refresh(db);
                     }
 
                     else if ((info.direction == "push") && (info.change.docs.length > 1)) {
@@ -665,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // handle error
                 });
 
-        })
+        });
 }, false);
 
 
@@ -854,3 +636,203 @@ document.addEventListener('DOMContentLoaded', function () {
     //     // };
 
     //     new Chartist.Bar('.ct-chart', chartData, options);
+
+
+//     //DONE
+// function editDoc(doc, newValue, db) {
+//     return new Promise(function (resolve, reject) {
+//         doc.country = newValue;
+//         doc.written = new Date().toISOString();
+//         resolve(db.put(doc));
+//     });
+// }
+
+
+// //DONE
+// function putDoc(newValue, docId, db) {
+//     return helper.pouch.getDoc(docId, db)
+//         .then((doc) => editDoc(doc, newValue, db))
+//         .catch((err) => console.log(err));
+// }
+
+
+
+// //Done
+// function putAndReload(docId, id, db) {
+//     getValueFromField('editField-', docId)
+//         .then((value) => putDoc(value, docId, db))
+
+//         .catch(function () {
+//             console.log('error');
+//         });
+// }
+
+
+
+// //DONE
+// /**
+//  * Creates a document with id, country, written
+//  * @param {*} value 
+//  * @param {*} db 
+//  */
+// function postDoc(value, db) {
+//     return new Promise(function (resolve, reject) {
+//         let doc = {
+//             dbName: db.name,
+//             _id: new Date().toISOString(),
+//             country: value,
+//             written: new Date().toISOString(),
+//             kind: "country"
+//         };
+//         resolve(db.put(doc));
+//     });
+// }
+
+
+// //DONE
+// function deleteAndReload(docId, id, db) {
+//     helper.pouch.deleteDoc(docId, db)
+
+//         .catch(function () {
+//             console.log('error');
+//         });
+// }
+
+
+// function fetchAllAndUpdate() {
+//     helper.pouch.fetchAll(db)
+//         .then((docs) => displayList(docs, 'countries', db));
+// }
+
+
+
+// //DONE     
+// function postAndReload(domId, db) {
+//     getValueFromField('', 'add-name')
+//         .then((value) => postDoc(value, db))
+//         .catch(function () {
+//             console.log('error');
+//         });
+// }
+
+
+// //DONE
+// function getValueFromField(domIdPrefix, domIdSuffix) {
+//     return new Promise(function (resolve, reject) {
+//         var el = document.getElementById(domIdPrefix + domIdSuffix);
+//         var value = el.value;
+//         if (value) {
+//             el.value = '';
+//             resolve(value);
+//         }
+//     });
+// }
+
+
+/// SKA BARA GÖRA EN RAD I TAGET - ÄNDRA ÄVEN FRÅN TABLE TILL DIV
+// function displayList(countries, id, db) {
+//     // console.log('db');
+//     // console.log(db);
+//     //var el = document.getElementById(id);
+//     var el = helper.dom.getElement('id', id);
+
+//     let data = '';
+//     el.innerHTML = data;
+//     if (countries.rows.length > 0) {
+//         for (var i = 0; i < countries.rows.length; i++) {
+//             let data = '';
+
+//             data += '<td>' + countries.rows[i].doc.country + '</td>';
+//             data += '<td><input type="text" id="' + "editField-" + countries.rows[i].doc._id + '"><button id="' + "editButton-" + countries.rows[i].doc._id + '">Edit</button></td>';
+//             data += '<td><input type="text" id="' + "deleteField-" + countries.rows[i].doc._id + '"><button id="' + "deleteButton-" + countries.rows[i].doc._id + '">Delete</button></td>';
+
+//             let tblrow = helper.dom.createElement('tr');
+//             tblrow.innerHTML = data;
+//             //el.innerHTML += data;
+
+//             let editField = tblrow.children[1].children[0];
+//             let editButton = tblrow.children[1].children[1];
+
+//             editButton.addEventListener('click', function () {
+//                 //console.log('db in event listener');
+//                 //console.log(db);
+//                 putAndReload(editField.getAttribute('id').slice(10), 'countries', db);
+//             });
+
+
+//             let deleteField = tblrow.children[2].children[0];
+//             let deleteButton = tblrow.children[2].children[1];
+
+//             deleteButton.addEventListener('click', function () {
+//                 deleteAndReload(deleteField.getAttribute('id').slice(12), 'countries', db);
+//             });
+
+//             //console.log(tblrow.children[0].children[1].children[0].getAttribute('id'));
+
+//             el.appendChild(tblrow);
+//         }
+//     }
+
+
+//     return el;
+// }
+
+
+
+// /**
+//  * Saves info from DOM to db
+//  * @param {*} element DOM element
+//  * @param {*} dataKind DOM elements attribute
+//  * @param {*} serializedFunction function connected to element
+//  */
+// function updateDBWithElementValue(element, dataKind, serializedFunction, db) {
+//     return new Promise(function (resolve, reject) {
+//         let doc;
+//         let dbId = helper.dom.getAttribute('db-id', element);
+
+//         console.log('dbID: ', dbId);
+
+//         if (dbId === "") {
+//             //prepares for database
+//             doc = {
+//                 dbName: db.name,
+//                 _id: new Date().toISOString(),
+//                 elementId: helper.dom.getAttribute('id', element),
+//                 elementValue: element.value,
+//                 elementFunction: serializedFunction,
+//                 written: new Date().toISOString(),
+//                 kind: dataKind
+//             };
+
+//             db.put(doc)
+//                 .then(() => {
+//                     resolve();
+//                 })
+
+//             //pushes the update into document
+
+//             //Sets database document id on element
+//             helper.dom.setAttribute("db-id", doc._id, element);
+//         } else {
+//             //gets doc from db and updates element from DOM value...
+//             console.log('dbID: ', dbId);
+
+//             helper.pouch.getDoc(dbId, db)
+//                 .then((doc) => {
+//                     if (doc.elementValue !== element.value) {
+//                         //updates document value on database
+//                         doc.elementValue = element.value;
+//                         //updates written 
+//                         doc.written = new Date().toISOString();
+//                         db.put(doc);
+//                     }
+
+//                     return doc;
+//                 })
+//                 .then((doc) => {
+//                     console.log(doc);
+//                     resolve();
+//                 });
+//         }
+//     });
+// }
