@@ -547,6 +547,7 @@ var helper = {};
     };
 
     this.event = {
+
         deleteLastDocWithFilter: my.curry(function (event, db) {
             let elementIdKind = event.target.attributes.kind.value;
 
@@ -562,38 +563,81 @@ var helper = {};
 
         addOneDocLastWithFilter: my.curry(function (event, db) {
             let elementIdKind = event.target.attributes.kind.value;
+            
+            return helper.pouch.getAllRowsWithFilter(db, elementIdKind)
+            .then((filteredRows) => {
+                console.log('filteredRows');
+                console.log(filteredRows);
+                lastRow = [];
+                lastRow = filteredRows.filter((filteredRow) => {
+                    return filteredRow.doc.nextH === 'last';
+                });
 
-            helper.pouch.getLastElementIdNumber(db, elementIdKind)
-            .then((newElementIdNumber) => {
-                let parameters = [
-                    {
-                        key: 'elementIdNumber',
-                        value: newElementIdNumber
-                    },
-                    {
-                        key: 'elementValue',
-                        value: ""
-                    },
-                    {
-                        key: 'kind',
-                        value: elementIdKind
-                    },
-                    {
-                        key: 'elementId',
-                        value: elementIdKind + "-" + newElementIdNumber
+                return(lastRow);
+            })
+            .then((lastRow) => {
+                console.log('lastRow');
+                console.log(lastRow);
+                let previousH;
+
+                if(helper.boolean.isEmpty(lastRow)) {
+                    previousH = 'first';
+                } else {
+                    previousH = lastRow[0].doc._id;
+                }
+
+                return helper.pouch.getLastElementIdNumber(db, elementIdKind)
+                .then((newElementIdNumber) => {
+
+                    let parameters = [
+                        {
+                            key: 'elementIdNumber',
+                            value: newElementIdNumber
+                        },
+                        {
+                            key: 'elementValue',
+                            value: ""
+                        },
+                        {
+                            key: 'previousH',
+                            value: previousH
+                        },
+                        {
+                            key: 'nextH',
+                            value: 'last'
+                        },
+                        {
+                            key: 'kind',
+                            value: elementIdKind
+                        },
+                        {
+                            key: 'elementId',
+                            value: elementIdKind + "-" + newElementIdNumber
+                        }
+                    ];
+                    return helper.pouch.createDoc(db, parameters);
+                })
+                .then((doc) => {
+                    return helper.pouch.postDoc(doc, db);
+                })
+                .then((response) => {
+                    if(!helper.boolean.isEmpty(lastRow)) {
+                        return helper.pouch.editDocByIdAndPut(previousH, db, [{
+                            key: 'nextH',
+                            value: response.id
+                        }]);
+                    } else {
+                        return response;
                     }
-                ];
-                return helper.pouch.createDoc(db, parameters);
-            })
-            .then((doc) => {
-                return helper.pouch.postDoc(doc, db);
-            })
-            .then(() => {
-                return helper.pouch.getLastRowWithFilter(db, elementIdKind);
-            })
-            .then((row) => {
-                return views.parmaco.createElementOfKind(elementIdKind + '-elements-box', elementIdKind, db, row);
-            }); 
+                })
+                .then(() => {
+                    return helper.pouch.getLastRowWithFilter(db, elementIdKind);
+                })
+                .then((row) => {
+                    return views.parmaco.createElementOfKind(elementIdKind + '-elements-box', elementIdKind, db, row);
+                }); 
+
+            });        
         }),
 
         deleteAllDocsWithFilter: my.curry(function (event, db) {

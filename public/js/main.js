@@ -343,6 +343,8 @@ function removeFromDom(filteredRows, elementIdKind) {
 
 
 
+
+
 //test function
 function nonsensFunction() {
 
@@ -377,6 +379,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             refresh(db);
+
+
+            helper.pouch.getAllRowsWithFilter(db, 'rent')
+            .then((filteredRows) => {
+                let result;
+                console.log(filteredRows);
+                result = filteredRows.reduce((added, filteredRow) => {
+                    console.log(added);
+                    return added + helper.str.convertStringToNumber(filteredRow.doc.elementValue);
+                }, 0);
+
+                alert(result);
+            });
 
 
             db.sync(remoteCouch, { live: true, retry: true, conflicts: true, include_docs: true })
