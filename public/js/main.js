@@ -340,6 +340,48 @@ function removeFromDom(filteredRows, elementIdKind) {
 
 
 
+function getNextRowInChain(filteredRows, id, sortedRows) {
+    let nextRow = [];
+
+    nextRow = filteredRows.filter((filteredRow) => {
+        return filteredRow.doc._id === id;
+    });
+
+    console.log('sortedRows');
+    console.log(sortedRows);
+
+    console.log('nextRow');
+    console.log(nextRow);
+
+    sortedRows.push(nextRow[0]);
+
+    if (nextRow[0].doc.nextH !== 'last') {
+        return getNextRowInChain(filteredRows, nextRow[0].doc.nextH, sortedRows);
+    } else {
+        return sortedRows;
+    }
+}
+
+
+function getChainedRowsOfKind(db, kind) {
+    return helper.pouch.getAllRowsWithFilter(db, 'rent')
+    .then((filteredRows) => {
+        let sortedRows = [];
+        let firstRow = [];
+        firstRow = filteredRows.filter((filteredRow) => {
+            return filteredRow.doc.previousH === 'first';
+        });
+    
+        sortedRows.push(firstRow[0]);
+    
+        if (firstRow[0].doc.nextH !== 'last') {
+            return getNextRowInChain(filteredRows, firstRow[0].doc.nextH, sortedRows);
+            
+        } else {
+            return sortedRows;
+        }
+    });
+}
 
 
 
@@ -381,17 +423,25 @@ document.addEventListener('DOMContentLoaded', function () {
             refresh(db);
 
 
-            helper.pouch.getAllRowsWithFilter(db, 'rent')
-            .then((filteredRows) => {
-                let result;
-                console.log(filteredRows);
-                result = filteredRows.reduce((added, filteredRow) => {
-                    console.log(added);
-                    return added + helper.str.convertStringToNumber(filteredRow.doc.elementValue);
-                }, 0);
 
+            getChainedRowsOfKind(db, 'rent')
+            .then((filteredChainedRows) => {
+                let result;
+                console.log(filteredChainedRows);
+                console.log('filteredChainedRows');
+                result = filteredChainedRows.reduce((added, filteredChainedRow) => {
+                    console.log(added);
+                    return added + helper.str.convertStringToNumber(filteredChainedRow.doc.elementValue);
+                }, 0);
+    
                 alert(result);
             });
+
+            
+
+
+
+
 
 
             db.sync(remoteCouch, { live: true, retry: true, conflicts: true, include_docs: true })
